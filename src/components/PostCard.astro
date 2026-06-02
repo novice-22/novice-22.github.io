@@ -1,0 +1,35 @@
+---
+import { formatDate, readingTime } from "../utils";
+
+interface Props {
+  post: any;
+  index: number;
+}
+const { post, index } = Astro.props;
+const { title, category, tags, summary, pubDate } = post.data;
+const num = String(index).padStart(3, "0");
+const rt = readingTime(post.body);
+const tagStr = tags.map((t: string) => `#${t}`).join(" ");
+---
+
+<a href={`/posts/${post.id}`} class="entry" style={`animation-delay:${index * 0.07}s`}>
+  <div class="e-num">{num}</div>
+  <div>
+    <span class="e-cat">{category}</span>
+    <div class="e-title">{title}</div>
+    <p class="e-sum">{summary}</p>
+    <div class="e-meta">
+      <span>{formatDate(pubDate)}</span>
+      <span class="sep">·</span>
+      <span>{rt} min</span>
+      {
+        tags.length > 0 && (
+          <>
+            <span class="sep">·</span>
+            <span class="tag">{tagStr}</span>
+          </>
+        )
+      }
+    </div>
+  </div>
+</a>

@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { ABOUT } from "../consts";
+---
+
+<BaseLayout title="소개">
+  <div class="main-head">
+    <h1><span class="dot"></span> {ABOUT.heading}</h1>
+  </div>
+  <div class="rule"></div>
+
+  <div class="page-intro">
+    {ABOUT.lines.map((l) => <p>{l}</p>)}
+  </div>
+
+  <div class="about-section">
+    <span class="nav-label">skills</span>
+    <div class="chips">
+      {ABOUT.skills.map((s) => <span class="chip">{s}</span>)}
+    </div>
+  </div>
+
+  <div class="about-section">
+    <span class="nav-label">about</span>
+    <div class="facts">
+      {
+        ABOUT.facts.map((f) => (
+          <div class="fact">
+            <span class="k">{f.k}</span>
+            <span class="v">{f.v}</span>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="about-section">
+    <span class="nav-label">contact</span>
+    <a class="contact-link" href={`mailto:${ABOUT.contact}`}>{ABOUT.contact}</a>
+  </div>
+</BaseLayout>

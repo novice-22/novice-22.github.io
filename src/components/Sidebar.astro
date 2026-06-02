@@ -1,0 +1,58 @@
+---
+import { getCollection } from "astro:content";
+import { SITE, NAV, CATEGORIES, SOCIAL } from "../consts";
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+const counts: Record<string, number> = {};
+for (const c of CATEGORIES) {
+  counts[c.slug] = posts.filter((p) => p.data.category === c.name).length;
+}
+const pad = (n: number) => String(n).padStart(2, "0");
+
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (href: string) =>
+  href === "/" ? pathname === "/" : pathname.startsWith(href);
+---
+
+<aside class="sidebar">
+  <a href="/" class="brand">
+    <span class="mark"><span class="at">~/</span>{SITE.title}</span><span class="cursor"></span>
+  </a>
+  <div class="tagline-mono">{SITE.tagline}</div>
+
+  <p class="about-blurb">{SITE.description}</p>
+
+  <nav class="nav-block">
+    <span class="nav-label">menu</span>
+    {
+      NAV.map((item) => (
+        <a href={item.href} class={isActive(item.href) ? "active" : ""}>
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="cat-list">
+    <span class="nav-label">categories</span>
+    {
+      CATEGORIES.map((c) => (
+        <a href={`/categories/${c.slug}`}>
+          {c.name} <span class="count">{pad(counts[c.slug])}</span>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="social">
+    <span class="nav-label">links</span>
+    {
+      SOCIAL.map((s) => (
+        <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener">
+          {s.label} <span class="arr">↗</span>
+        </a>
+      ))
+    }
+    <button class="theme-toggle" style="margin-top:14px;width:fit-content;">[ dark ]</button>
+  </div>
+</aside>

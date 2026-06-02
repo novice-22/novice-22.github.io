@@ -1,0 +1,26 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostCard from "../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const recent = posts.slice(0, 6);
+const total = posts.length;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<BaseLayout>
+  <div class="main-head">
+    <h1><span class="dot"></span> 최근 글</h1>
+    <span class="meta">{pad(total)} posts</span>
+  </div>
+  <div class="rule"></div>
+
+  <div class="feed">
+    {recent.map((post, i) => <PostCard post={post} index={i + 1} />)}
+  </div>
+
+  {total > 6 && <a href="/posts" class="more">더 보기 <span class="arr">→</span></a>}
+</BaseLayout>

@@ -1,0 +1,90 @@
+---
+import "../styles/global.css";
+import Sidebar from "../components/Sidebar.astro";
+import { SITE } from "../consts";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = SITE.description } = Astro.props;
+const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.tagline}`;
+---
+
+<!doctype html>
+<html lang="ko" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script is:inline>
+      // FOUC 방지: 렌더 전 테마 적용
+      (function () {
+        var t = localStorage.getItem("theme") || "dark";
+        document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="layout">
+      <Sidebar />
+      <main class="main">
+        <slot />
+        <footer>
+          <span>© {new Date().getFullYear()} {SITE.title}</span>
+          <span class="built">built with <span class="accent">Astro</span> + <span class="accent">Notion</span></span>
+        </footer>
+      </main>
+    </div>
+
+    <script is:inline>
+      // 테마 토글
+      document.addEventListener("click", function (e) {
+        var btn = e.target.closest && e.target.closest(".theme-toggle");
+        if (!btn) return;
+        var html = document.documentElement;
+        var next = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+        html.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        document.querySelectorAll(".theme-toggle").forEach(function (b) {
+          b.textContent = next === "dark" ? "[ dark ]" : "[ light ]";
+        });
+      });
+      (function () {
+        var t = document.documentElement.getAttribute("data-theme");
+        document.querySelectorAll(".theme-toggle").forEach(function (b) {
+          b.textContent = t === "dark" ? "[ dark ]" : "[ light ]";
+        });
+      })();
+
+      // 코드블록 복사 버튼
+      document.querySelectorAll(".prose pre").forEach(function (pre) {
+        var btn = document.createElement("button");
+        btn.className = "copy-btn";
+        btn.textContent = "copy";
+        btn.addEventListener("click", function () {
+          var code = pre.querySelector("code");
+          var text = code ? code.innerText : pre.innerText;
+          navigator.clipboard.writeText(text).then(function () {
+            btn.textContent = "copied";
+            btn.classList.add("copied");
+            setTimeout(function () {
+              btn.textContent = "copy";
+              btn.classList.remove("copied");
+            }, 1500);
+          });
+        });
+        pre.appendChild(btn);
+      });
+    </script>
+  </body>
+</html>

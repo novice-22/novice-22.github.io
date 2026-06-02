@@ -1,0 +1,19 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-error.log*
+
+# environment (절대 커밋하지 마세요 — Notion 토큰 등)
+.env
+.env.*
+!.env.example
+
+# os
+.DS_Store
+Thumbs.db

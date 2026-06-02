@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getCollection } from "astro:content";
+import { CATEGORIES } from "../../consts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  return CATEGORIES.map((c) => ({
+    params: { category: c.slug },
+    props: {
+      name: c.name,
+      posts: posts
+        .filter((p) => p.data.category === c.name)
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { name, posts } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<BaseLayout title={name}>
+  <div class="main-head">
+    <h1><span class="dot"></span> {name}</h1>
+    <span class="meta">{pad(posts.length)} posts</span>
+  </div>
+  <div class="rule"></div>
+
+  {
+    posts.length > 0 ? (
+      <div class="feed">
+        {posts.map((post, i) => (
+          <PostCard post={post} index={i + 1} />
+        ))}
+      </div>
+    ) : (
+      <div class="page-intro">
+        <p>아직 이 카테고리에 글이 없어요.</p>
+      </div>
+    )
+  }
+</BaseLayout>

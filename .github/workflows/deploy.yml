@@ -1,0 +1,42 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Actions 탭에서 수동 실행 버튼
+  # Notion 연동 후, 정기적으로 재빌드해 새 글을 반영하려면 주석 해제 (예: 6시간마다)
+  # schedule:
+  #   - cron: "0 */6 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build Astro site
+        uses: withastro/action@v3
+        # ── Notion 연동 시 주석 해제 (Settings → Secrets → Actions 에 등록 후) ──
+        # env:
+        #   NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        #   NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
