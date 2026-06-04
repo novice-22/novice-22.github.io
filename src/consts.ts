@@ -31,7 +31,7 @@ export const CATEGORIES = [
 
 // 외부 링크 (USERNAME 부분을 본인 계정으로)
 export const SOCIAL = [
-  { label: "GITHUB", href: "https://github.com/your-username" },
+  { label: "GITHUB", href: "https://github.com/novice-22" },
   { label: "HACKERONE", href: "https://hackerone.com/your-username" },
   { label: "RSS", href: "/rss.xml" },
 ];
