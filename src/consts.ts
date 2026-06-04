@@ -4,7 +4,7 @@
 
 export const SITE = {
   // GitHub Pages 주소로 바꾸세요 (astro.config.mjs 의 site 와 동일하게)
-  url: "https://your-username.github.io",
+  url: "https://novice-22.github.io",
   title: "urim",
   tagline: "security research log",
   description: "취약점 분석 · 버그바운티 · CTF 기록. 발견한 것들을 글로 남기는 공간.",
