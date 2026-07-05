@@ -45,14 +45,18 @@ const isActive = (href: string) =>
   </div>
 
   <div class="social">
-    <span class="nav-label">links</span>
-    {
-      SOCIAL.map((s) => (
-        <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener">
-          {s.label} <span class="arr">↗</span>
-        </a>
-      ))
-    }
+    <button class="links-toggle" aria-expanded="false" aria-controls="social-links">
+      links <span class="tri">›</span>
+    </button>
+    <div class="social-links" id="social-links" hidden>
+      {
+        SOCIAL.map((s) => (
+          <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener">
+            {s.label} <span class="arr">↗</span>
+          </a>
+        ))
+      }
+    </div>
     <button class="theme-toggle" style="margin-top:14px;width:fit-content;">[ dark ]</button>
   </div>
 </aside>

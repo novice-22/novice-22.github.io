@@ -66,6 +66,16 @@ const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SIT
         });
       })();
 
+      // links 토글 (사이드바)
+      document.addEventListener("click", function (e) {
+        var btn = e.target.closest && e.target.closest(".links-toggle");
+        if (!btn) return;
+        var box = document.getElementById("social-links");
+        var open = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", open ? "false" : "true");
+        if (box) box.hidden = open;
+      });
+
       // 코드블록 복사 버튼
       document.querySelectorAll(".prose pre").forEach(function (pre) {
         var btn = document.createElement("button");
