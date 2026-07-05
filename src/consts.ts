@@ -3,8 +3,8 @@
 // ───────────────────────────────────────────────────────────
 
 export const SITE = {
-  // GitHub Pages 주소로 바꾸세요 (astro.config.mjs 의 site 와 동일하게)
-  url: "https://your-username.github.io",
+  // astro.config.mjs 의 site 와 동일하게 유지
+  url: "https://novice-22.com",
   title: "urim",
   tagline: "security research log",
   description: "취약점 분석 · 버그바운티 · CTF 기록. 발견한 것들을 글로 남기는 공간.",
@@ -29,10 +29,10 @@ export const CATEGORIES = [
   { slug: "study", name: "학습 노트" },
 ];
 
-// 외부 링크 (USERNAME 부분을 본인 계정으로)
+// 외부 링크
 export const SOCIAL = [
-  { label: "GITHUB", href: "https://github.com/your-username" },
-  { label: "HACKERONE", href: "https://hackerone.com/your-username" },
+  { label: "GITHUB", href: "https://github.com/novice-22" },
+  { label: "HACKERONE", href: "https://hackerone.com/leewoo" },
   { label: "RSS", href: "/rss.xml" },
 ];
 
@@ -50,7 +50,7 @@ export const ABOUT = {
     { k: "활동", v: "HackerOne VDP · DreamHack" },
     { k: "관심", v: "취약점 진단 · 자동화" },
   ],
-  contact: "your-email@example.com",
+  contact: "gmemod6602@gmail.com",
 };
 
 // 카테고리 헬퍼
