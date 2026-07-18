@@ -21,6 +21,4 @@ const pad = (n: number) => String(n).padStart(2, "0");
   <div class="feed">
     {recent.map((post, i) => <PostCard post={post} index={i + 1} />)}
   </div>
-
-  {total > 6 && <a href="/posts" class="more">더 보기 <span class="arr">→</span></a>}
 </BaseLayout>
