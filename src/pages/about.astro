@@ -14,25 +14,32 @@ import { ABOUT } from "../consts";
   </div>
 
   <div class="about-section">
-    <span class="nav-label">skills</span>
+    <span class="nav-label">interests</span>
     <div class="chips">
       {ABOUT.skills.map((s) => <span class="chip">{s}</span>)}
     </div>
   </div>
 
-  <div class="about-section">
-    <span class="nav-label">about</span>
-    <div class="facts">
-      {
-        ABOUT.facts.map((f) => (
-          <div class="fact">
-            <span class="k">{f.k}</span>
-            <span class="v">{f.v}</span>
+  {
+    ABOUT.resume
+      .filter((s) => s.items.length > 0)
+      .map((s) => (
+        <div class="about-section">
+          <span class="nav-label">{s.label}</span>
+          <div class="facts">
+            {s.items.map((it) => (
+              <div class="fact">
+                <span class="k">{it.when}</span>
+                <span class="v">
+                  {it.name}
+                  {it.desc && <span class="d"> — {it.desc}</span>}
+                </span>
+              </div>
+            ))}
           </div>
-        ))
-      }
-    </div>
-  </div>
+        </div>
+      ))
+  }
 
   <div class="about-section">
     <span class="nav-label">contact</span>
