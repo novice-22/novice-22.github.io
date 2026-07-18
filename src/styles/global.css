@@ -82,12 +82,55 @@ a { color: inherit; }
 /* ── layout ───────────────────────────────────────────────── */
 .layout {
   position: relative; z-index: 1;
-  max-width: var(--maxw);
-  margin: 0 auto;
   padding: 0 36px;
   display: grid;
   grid-template-columns: var(--side) 1fr;
   gap: 64px;
+}
+
+/* ── sidebar collapse ─────────────────────────────────────── */
+.side-toggle {
+  /* 사이드바 오른쪽 가장자리(거터)에 붙는 패널 토글 — 접으면 화면 좌상단으로 이동 */
+  position: fixed; top: 18px; z-index: 20;
+  left: calc(var(--side) + 44px);
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: 7px;
+  cursor: pointer;
+  transition: left 0.32s cubic-bezier(0.22, 1, 0.36, 1), color 0.16s ease, border-color 0.16s ease;
+}
+.side-toggle:hover { border-color: var(--accent-dim); color: var(--accent); }
+html[data-sidebar="collapsed"] .side-toggle { left: 16px; }
+
+/* 데스크톱: 사이드바가 옆으로 밀리며 열리고 닫힘 */
+@media (min-width: 881px) {
+  .layout {
+    transition:
+      grid-template-columns 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      gap 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .sidebar {
+    transition:
+      opacity 0.2s ease,
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0s;
+  }
+  /* 닫히는 동안 폭이 줄어도 내부 텍스트가 재배치되지 않게 고정 */
+  .sidebar > * { min-width: var(--side); }
+  .sidebar .about-blurb { min-width: 240px; }
+
+  html[data-sidebar="collapsed"] .layout { grid-template-columns: 0px 1fr; gap: 0; }
+  html[data-sidebar="collapsed"] .sidebar {
+    opacity: 0;
+    transform: translateX(-28px);
+    pointer-events: none;
+    visibility: hidden;
+    transition:
+      opacity 0.2s ease,
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0.32s;
+  }
 }
 
 /* ── sidebar / identity ───────────────────────────────────── */
@@ -95,8 +138,11 @@ a { color: inherit; }
   padding: 56px 0;
   position: sticky; top: 0; align-self: start;
   height: 100vh;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none; /* 스크롤바 숨김 (휠·터치 스크롤은 동작) */
   display: flex; flex-direction: column;
 }
+.sidebar::-webkit-scrollbar { display: none; }
 .brand { display: flex; align-items: baseline; gap: 2px; text-decoration: none; }
 .brand .mark {
   font-family: var(--mono); font-weight: 600; font-size: 30px;
@@ -185,7 +231,13 @@ a { color: inherit; }
 .theme-toggle:hover { border-color: var(--accent-dim); color: var(--accent); }
 
 /* ── main ─────────────────────────────────────────────────── */
-.main { padding: 56px 0 80px; min-width: 0; }
+.main {
+  padding: 56px 0 80px; min-width: 0;
+  /* 사이드바 바로 옆에 붙고, 너무 넓어지지만 않게 최대 폭만 제한 */
+  max-width: 980px; width: 100%;
+}
+/* 사이드바를 접었을 때만 가운데 정렬 */
+html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 
 .main-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .main-head h1 {
@@ -340,10 +392,18 @@ a { color: inherit; }
   font-family: var(--mono); font-size: 12px; color: var(--text-dim);
   border: 1px solid var(--border); border-radius: 6px; padding: 5px 11px;
 }
+.tag-cloud { margin-top: 24px; }
+.chip-link {
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+.chip-link:hover { color: var(--accent); border-color: var(--accent-dim); }
+.chip-n { font-size: 11px; color: var(--text-faint); }
 .facts { display: flex; flex-direction: column; gap: 10px; max-width: 460px; }
 .fact { display: flex; gap: 18px; font-size: 14px; }
-.fact .k { font-family: var(--mono); font-size: 12px; color: var(--text-faint); width: 60px; flex-shrink: 0; padding-top: 1px; }
+.fact .k { font-family: var(--mono); font-size: 12px; color: var(--text-faint); width: 80px; flex-shrink: 0; padding-top: 1px; }
 .fact .v { color: var(--text-dim); }
+.fact .v .d { color: var(--text-faint); }
 .contact-link { color: var(--accent); font-family: var(--mono); font-size: 13.5px; text-decoration: none; border-bottom: 1px solid var(--accent-dim); }
 
 footer {
@@ -358,6 +418,8 @@ footer a:hover { color: var(--accent); }
 /* ── responsive ───────────────────────────────────────────── */
 @media (max-width: 880px) {
   .layout { grid-template-columns: 1fr; gap: 0; padding: 0 22px; }
+  .side-toggle, html[data-sidebar="collapsed"] .side-toggle { left: auto; right: 16px; }
+  html[data-sidebar="collapsed"] .sidebar { display: none; }
   .sidebar { position: static; height: auto; padding: 40px 0 28px; border-bottom: 1px solid var(--border-soft); }
   .social { margin-top: 28px; flex-direction: row; flex-wrap: wrap; gap: 18px; align-items: center; }
   .social-links { flex-direction: row; flex-wrap: wrap; gap: 18px; }
