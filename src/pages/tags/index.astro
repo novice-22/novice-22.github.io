@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const posts = await getCollection("posts", ({ data }) => !data.draft);
+const counts: Record<string, number> = {};
+for (const p of posts) for (const t of p.data.tags) counts[t] = (counts[t] ?? 0) + 1;
+// 글 많은 순 → 같으면 이름순
+const tags = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<BaseLayout title="태그">
+  <div class="main-head">
+    <h1><span class="dot"></span> 태그</h1>
+    <span class="meta">{pad(tags.length)} tags</span>
+  </div>
+  <div class="rule"></div>
+
+  {
+    tags.length > 0 ? (
+      <div class="chips tag-cloud">
+        {tags.map(([tag, n]) => (
+          <a href={`/tags/${tag}`} class="chip chip-link">
+            #{tag} <span class="chip-n">{pad(n)}</span>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="page-intro">
+        <p>아직 태그가 없어요.</p>
+      </div>
+    )
+  }
+</BaseLayout>
