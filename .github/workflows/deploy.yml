@@ -27,10 +27,10 @@ jobs:
         uses: withastro/action@v3
         with:
           node-version: 22
-        # ── Notion 연동 시 주석 해제 (Settings → Secrets → Actions 에 등록 후) ──
-        # env:
-        #   NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-        #   NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        # Notion 연동 (ON) — Settings → Secrets → Actions 에 등록된 값 전달
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
 
   deploy:
     needs: build
