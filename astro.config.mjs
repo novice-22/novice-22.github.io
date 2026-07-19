@@ -12,6 +12,11 @@ export default defineConfig({
 
   integrations: [sitemap()],
 
+  // Notion 본문 이미지(원격 AWS 버킷)를 빌드 시 처리
+  image: {
+    remotePatterns: [{ protocol: "https", hostname: "**.amazonaws.com" }],
+  },
+
   markdown: {
     shikiConfig: {
       theme: "one-dark-pro",

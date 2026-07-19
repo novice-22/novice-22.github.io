@@ -1,5 +1,5 @@
 ---
-import { formatDate, readingTime } from "../utils";
+import { formatDate, postSlug } from "../utils";
 
 interface Props {
   post: any;
@@ -8,11 +8,10 @@ interface Props {
 const { post, index } = Astro.props;
 const { title, category, tags, summary, pubDate } = post.data;
 const num = String(index).padStart(3, "0");
-const rt = readingTime(post.body);
 const tagStr = tags.map((t: string) => `#${t}`).join(" ");
 ---
 
-<a href={`/posts/${post.id}`} class="entry" style={`animation-delay:${index * 0.07}s`}>
+<a href={`/posts/${postSlug(post)}`} class="entry" style={`animation-delay:${index * 0.07}s`}>
   <div class="e-num">{num}</div>
   <div>
     <span class="e-cat">{category}</span>
@@ -20,8 +19,6 @@ const tagStr = tags.map((t: string) => `#${t}`).join(" ");
     <p class="e-sum">{summary}</p>
     <div class="e-meta">
       <span>{formatDate(pubDate)}</span>
-      <span class="sep">·</span>
-      <span>{rt} min</span>
       {
         tags.length > 0 && (
           <>

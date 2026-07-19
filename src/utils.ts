@@ -12,3 +12,8 @@ export function readingTime(body: string | undefined): number {
   const chars = body.replace(/\s/g, "").length;
   return Math.max(1, Math.round(chars / 500));
 }
+
+// 글 URL 슬러그 — 노션 "슬러그" 속성이 있으면 그걸, 없으면 페이지 id로 폴백
+export function postSlug(post: { id: string; data: { slug?: string } }): string {
+  return post.data.slug || post.id;
+}
