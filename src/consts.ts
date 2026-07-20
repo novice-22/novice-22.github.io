@@ -14,6 +14,7 @@ export const SITE = {
 // 사이드바 메뉴
 export const NAV = [
   { label: "홈", href: "/" },
+  { label: "보안뉴스", href: "/news" },
   { label: "소개", href: "/about" },
 ];
 

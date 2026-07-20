@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { formatDate, newsSlugs } from "../../utils";
+
+const all = await getCollection("news");
+const slugs = newsSlugs(all);
+const items = all.sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<BaseLayout title="보안뉴스" description="보안 뉴스 스크랩과 짧은 코멘트.">
+  <div class="main-head">
+    <h1><span class="dot"></span> 보안뉴스</h1>
+    <span class="meta">{pad(items.length)} clips</span>
+  </div>
+  <div class="rule"></div>
+
+  {
+    items.length > 0 ? (
+      <div class="feed">
+        {items.map((item, i) => (
+          <a href={`/news/${slugs.get(item.id)}`} class="entry" style={`animation-delay:${(i + 1) * 0.07}s`}>
+            <div class="e-num">{pad(i + 1)}</div>
+            <div>
+              {item.data.categories.length > 0 && (
+                <span class="e-cat">{item.data.categories[0]}</span>
+              )}
+              <div class="e-title">{item.data.title}</div>
+              <div class="e-meta">
+                <span>{formatDate(new Date(item.data.date))}</span>
+                {[...item.data.categories.slice(1), ...item.data.keywords].length > 0 && (
+                  <>
+                    <span class="sep">·</span>
+                    <span class="tag">
+                      {[...item.data.categories.slice(1), ...item.data.keywords]
+                        .map((c: string) => `#${c}`)
+                        .join(" ")}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <div class="page-intro">
+        <p>아직 발행된 보안뉴스가 없어요.</p>
+      </div>
+    )
+  }
+</BaseLayout>

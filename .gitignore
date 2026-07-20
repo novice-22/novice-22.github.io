@@ -17,3 +17,6 @@ yarn-error.log*
 # os
 .DS_Store
 Thumbs.db
+
+# 빌드 때 생성되는 노션 이미지 (재생성됨)
+public/notion-img/

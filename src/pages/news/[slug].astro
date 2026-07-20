@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render } from "astro:content";
+import { formatDate, newsSlugs } from "../../utils";
+
+export async function getStaticPaths() {
+  const items = await getCollection("news");
+  const slugs = newsSlugs(items);
+  return items.map((item) => ({
+    params: { slug: slugs.get(item.id) },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const { title, source, categories, keywords, date } = item.data;
+const allTags = [...categories, ...keywords];
+---
+
+<BaseLayout title={title} description={`보안뉴스 스크랩 · ${title}`}>
+  <article class="article">
+    <a href="/news" class="back-link">← 보안뉴스</a>
+
+    <div class="post-head">
+      {categories.length > 0 && <span class="e-cat">{categories[0]}</span>}
+      <h1 class="post-title" data-pagefind-body data-pagefind-meta="title">{title}</h1>
+      <div class="post-meta">
+        <span>{formatDate(new Date(date))}</span>
+      </div>
+      {
+        allTags.length > 0 && (
+          <div class="tag-row" data-pagefind-body>
+            {allTags.map((tag: string) => (
+              <button type="button" class="hashtag" data-search={tag}>
+                #{tag}
+              </button>
+            ))}
+          </div>
+        )
+      }
+    </div>
+    <div class="post-rule"></div>
+
+    <div class="prose news-prose">
+      <Content />
+    </div>
+
+    {
+      source && (
+        <a href={source} target="_blank" rel="noopener" class="more source-link">
+          원문 보기 <span class="arr">↗</span>
+        </a>
+      )
+    }
+  </article>
+</BaseLayout>
