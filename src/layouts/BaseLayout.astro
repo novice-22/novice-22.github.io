@@ -35,6 +35,9 @@ const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SIT
         document.documentElement.setAttribute("data-sidebar", s);
       })();
     </script>
+
+    <!-- Cloudflare Web Analytics (방문자 통계) -->
+    <script is:inline defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "9c98ffed405b42308810c86c0bd35a05"}'></script>
   </head>
   <body>
     <button class="side-toggle" title="사이드바 닫기" aria-label="사이드바 접기/펼치기">
