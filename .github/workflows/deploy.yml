@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch: # Actions 탭에서 수동 실행 버튼
-  # Notion 연동 후, 정기적으로 재빌드해 새 글을 반영하려면 주석 해제 (예: 6시간마다)
-  # schedule:
-  #   - cron: "0 */6 * * *"
+  # Notion 내용을 12시간마다 자동으로 다시 읽어와 반영 (00:00, 12:00 UTC)
+  schedule:
+    - cron: "0 0,12 * * *"
 
 permissions:
   contents: read
