@@ -22,6 +22,18 @@ const isActive = (href: string) =>
 
   <p class="about-blurb">{SITE.description}</p>
 
+  <div class="sb-search">
+    <input
+      type="search"
+      id="site-search"
+      class="sb-search-input"
+      placeholder="검색..."
+      autocomplete="off"
+      aria-label="사이트 검색"
+    />
+    <div id="site-search-results" class="sb-search-results" hidden></div>
+  </div>
+
   <nav class="nav-block">
     <span class="nav-label">menu</span>
     {

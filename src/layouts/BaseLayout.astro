@@ -103,6 +103,104 @@ const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SIT
         if (box) box.hidden = open;
       });
 
+      // 사이트 검색 (Pagefind 실시간 드롭다운)
+      (function () {
+        var input = document.getElementById("site-search");
+        var box = document.getElementById("site-search-results");
+        if (!input || !box) return;
+        var pf = null;
+        var timer = null;
+
+        function loadPagefind() {
+          if (pf) return Promise.resolve(pf);
+          return import("/pagefind/pagefind.js")
+            .then(function (m) {
+              pf = m;
+              if (pf.options) pf.options({ excerptLength: 20 });
+              return pf;
+            })
+            .catch(function () {
+              return null;
+            });
+        }
+
+        function esc(s) {
+          var d = document.createElement("div");
+          d.textContent = s == null ? "" : s;
+          return d.innerHTML;
+        }
+
+        function render(items, q) {
+          if (!items.length) {
+            box.innerHTML =
+              '<div class="sb-sr-empty">‘' + esc(q) + '’ 검색 결과가 없어요</div>';
+            box.hidden = false;
+            return;
+          }
+          box.innerHTML = items
+            .map(function (r) {
+              return (
+                '<a class="sb-sr-item" href="' +
+                esc(r.url) +
+                '"><span class="sb-sr-title">' +
+                esc(r.meta && r.meta.title ? r.meta.title : r.url) +
+                '</span><span class="sb-sr-ex">' +
+                (r.excerpt || "") +
+                "</span></a>"
+              );
+            })
+            .join("");
+          box.hidden = false;
+        }
+
+        function doSearch(q) {
+          loadPagefind().then(function (p) {
+            if (!p) {
+              box.innerHTML =
+                '<div class="sb-sr-empty">검색은 배포된 사이트에서 동작해요</div>';
+              box.hidden = false;
+              return;
+            }
+            p.search(q).then(function (res) {
+              Promise.all(res.results.map(function (r) { return r.data(); })).then(function (items) {
+                render(items, q);
+              });
+            });
+          });
+        }
+
+        input.addEventListener("input", function () {
+          var q = input.value.trim();
+          clearTimeout(timer);
+          if (!q) {
+            box.hidden = true;
+            box.innerHTML = "";
+            return;
+          }
+          timer = setTimeout(function () { doSearch(q); }, 200);
+        });
+        input.addEventListener("focus", loadPagefind);
+
+        // 해시태그 클릭 → 검색창에 넣고 검색
+        document.addEventListener("click", function (e) {
+          var tag = e.target.closest && e.target.closest(".hashtag[data-search]");
+          if (!tag) return;
+          e.preventDefault();
+          var q = tag.getAttribute("data-search") || "";
+          input.value = q;
+          input.focus();
+          if (q) doSearch(q);
+        });
+
+        // 바깥 클릭 시 결과 닫기
+        document.addEventListener("click", function (e) {
+          if (!e.target.closest || !e.target.closest(".sb-search")) box.hidden = true;
+        });
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { box.hidden = true; input.blur(); }
+        });
+      })();
+
       // 코드블록 복사 버튼
       document.querySelectorAll(".prose pre").forEach(function (pre) {
         var btn = document.createElement("button");

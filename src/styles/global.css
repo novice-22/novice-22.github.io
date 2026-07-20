@@ -381,6 +381,49 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .copy-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
 .copy-btn.copied { color: var(--accent); }
 
+/* 보안뉴스 상세 — 기사 이미지(저작권·만료 URL)는 숨김 */
+.news-prose img { display: none; }
+.source-link { margin-top: 32px; }
+
+/* 해시태그 (글·뉴스 상단) */
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.hashtag {
+  font-family: var(--mono); font-size: 12px; color: var(--accent-dim);
+  text-decoration: none; border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 10px; transition: all 0.16s ease;
+  background: none; cursor: pointer; line-height: 1.6;
+}
+.hashtag:hover { color: var(--accent); border-color: var(--accent-dim); background: var(--surface); }
+
+/* 사이드바 검색 바 */
+.sb-search { position: relative; margin-top: 22px; }
+.sb-search-input {
+  width: 100%; font-family: var(--mono); font-size: 13px;
+  background: var(--surface); color: var(--text);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 12px; outline: none; transition: border-color 0.16s ease;
+}
+.sb-search-input::placeholder { color: var(--text-faint); }
+.sb-search-input:focus { border-color: var(--accent-dim); }
+.sb-search-results {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  width: 340px; max-width: 78vw; max-height: 60vh; overflow-y: auto;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px; z-index: 30;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+.sb-sr-item {
+  display: flex; flex-direction: column; gap: 3px;
+  padding: 10px 12px; border-radius: 7px; text-decoration: none;
+  transition: background 0.14s ease;
+}
+.sb-sr-item:hover { background: var(--surface-hover); }
+.sb-sr-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.sb-sr-item:hover .sb-sr-title { color: var(--accent); }
+.sb-sr-ex { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+.sb-sr-ex mark { background: var(--accent-glow); color: var(--accent); padding: 0 2px; border-radius: 3px; }
+.sb-sr-empty { padding: 12px; font-size: 12.5px; color: var(--text-faint); font-family: var(--mono); }
+
 /* simple page intro (about, lists) */
 .page-intro { margin-bottom: 6px; }
 .page-intro p { color: var(--text-dim); font-size: 15px; margin-top: 10px; max-width: 640px; line-height: 1.7; }
