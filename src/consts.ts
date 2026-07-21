@@ -18,15 +18,22 @@ export const NAV = [
   { label: "소개", href: "/about" },
 ];
 
-// 카테고리 — slug(URL용)와 name(표시용)을 분리
-// 글 프론트매터의 category 값은 name 과 똑같이 적으면 됩니다.
+// 카테고리 — slug(URL용)와 name(표시용)을 분리.
+// 글의 category 값은 name 과 똑같이 적는다.
+// "취약점 분석"만 하위 분야(children)로 한 번 더 나뉜다.
+// 취약점 분석 글은 노션 "분야" 속성으로 분야를 지정한다.
 export const CATEGORIES = [
-  { slug: "vuln", name: "취약점 분석" },
-  { slug: "bugbounty", name: "버그바운티" },
-  { slug: "ctf", name: "CTF · 워게임" },
+  {
+    slug: "vuln",
+    name: "취약점 분석",
+    children: [
+      { slug: "web", name: "웹" },
+      { slug: "iot", name: "IoT/펌웨어" },
+      { slug: "aimcp", name: "AI/MCP" },
+    ],
+  },
+  { slug: "report", name: "취약점 제보" },
   { slug: "project", name: "프로젝트" },
-  { slug: "news", name: "보안뉴스" },
-  { slug: "study", name: "학습 노트" },
 ];
 
 // 외부 링크
@@ -117,3 +124,13 @@ export const categoryNameToSlug = (name: string) =>
 
 export const categorySlugToName = (slug: string) =>
   CATEGORIES.find((c) => c.slug === slug)?.name ?? slug;
+
+// 하위 분야를 가진 카테고리 (취약점 분석)
+export const getCategory = (slug: string) =>
+  CATEGORIES.find((c) => c.slug === slug);
+
+export const fieldNameToSlug = (catSlug: string, fieldName: string) =>
+  getCategory(catSlug)?.children?.find((f) => f.name === fieldName)?.slug ?? "etc";
+
+export const fieldSlugToName = (catSlug: string, fieldSlug: string) =>
+  getCategory(catSlug)?.children?.find((f) => f.slug === fieldSlug)?.name ?? fieldSlug;

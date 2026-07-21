@@ -207,6 +207,35 @@ a { color: inherit; }
   transition: color 0.16s, border-color 0.16s;
 }
 
+/* 하위 분야 아코디언 (취약점 분석) */
+.cat-parent-row {
+  display: flex; align-items: center; gap: 4px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.cat-toggle {
+  background: none; border: none; cursor: pointer; padding: 6px 4px 6px 0;
+  color: var(--text-faint); display: flex; align-items: center;
+}
+.cat-toggle .tri { transition: transform 0.16s ease; }
+.cat-toggle:hover { color: var(--accent); }
+.cat-group[data-open="true"] .cat-toggle .tri { transform: rotate(90deg); }
+.cat-parent-link {
+  flex: 1; font-size: 13px; color: var(--text-dim); text-decoration: none;
+  padding: 6px 0; transition: color 0.16s ease;
+}
+.cat-parent-link:hover { color: var(--text); }
+.cat-parent-row:hover .count { color: var(--accent); border-color: var(--accent-dim); }
+.cat-children {
+  overflow: hidden; max-height: 0;
+  transition: max-height 0.24s ease;
+}
+.cat-group[data-open="true"] .cat-children { max-height: 300px; }
+.cat-children a {
+  padding-left: 16px; font-size: 12.5px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.cat-children a .count { font-size: 10px; }
+
 .social { margin-top: auto; padding-top: 36px; display: flex; flex-direction: column; gap: 9px; }
 .links-toggle {
   font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
@@ -254,6 +283,7 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 }
 .main-head h1 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 .main-head .meta { font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); }
+.main-head .crumb-sep { color: var(--text-faint); margin: 0 2px; font-weight: 400; }
 
 .rule {
   height: 1px; margin: 18px 0 8px;

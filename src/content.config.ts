@@ -76,6 +76,7 @@ const posts = defineCollection({
       제목: t.title,
       슬러그: t.rich_text.optional(),
       카테고리: t.select.optional(),
+      분야: t.select.optional(), // 취약점 분석 글의 하위 분야 (웹/IoT·펌웨어/AI·MCP)
       태그: t.multi_select.optional(),
       요약: t.rich_text.optional(),
       발행일: t.date.optional(),
@@ -83,7 +84,8 @@ const posts = defineCollection({
   }).transform((page) => ({
     title: page.properties.제목,
     slug: page.properties.슬러그?.trim() || undefined, // 비면 페이지 id로 폴백
-    category: page.properties.카테고리 ?? "학습 노트",
+    category: page.properties.카테고리 ?? "취약점 분석",
+    field: page.properties.분야 ?? null, // 취약점 분석만 사용, 나머지는 null
     tags: page.properties.태그 ?? [],
     summary: page.properties.요약 ?? "",
     pubDate: page.properties.발행일?.start ?? new Date(),

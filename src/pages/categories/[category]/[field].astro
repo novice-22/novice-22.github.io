@@ -1,0 +1,54 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import PostCard from "../../../components/PostCard.astro";
+import { getCollection } from "astro:content";
+import { CATEGORIES } from "../../../consts";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  const paths = [];
+  for (const c of CATEGORIES) {
+    for (const f of c.children ?? []) {
+      paths.push({
+        params: { category: c.slug, field: f.slug },
+        props: {
+          catName: c.name,
+          fieldName: f.name,
+          posts: posts
+            .filter((p) => p.data.category === c.name && (p.data as any).field === f.name)
+            .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+        },
+      });
+    }
+  }
+  return paths;
+}
+
+const { catName, fieldName, posts } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<BaseLayout title={`${catName} · ${fieldName}`}>
+  <div class="main-head">
+    <h1>
+      <span class="dot"></span> {catName}
+      <span class="crumb-sep">/</span> {fieldName}
+    </h1>
+    <span class="meta">{pad(posts.length)} posts</span>
+  </div>
+  <div class="rule"></div>
+
+  {
+    posts.length > 0 ? (
+      <div class="feed">
+        {posts.map((post, i) => (
+          <PostCard post={post} index={i + 1} />
+        ))}
+      </div>
+    ) : (
+      <div class="page-intro">
+        <p>아직 이 분야에 글이 없어요.</p>
+      </div>
+    )
+  }
+</BaseLayout>

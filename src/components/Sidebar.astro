@@ -6,6 +6,12 @@ const posts = await getCollection("posts", ({ data }) => !data.draft);
 const counts: Record<string, number> = {};
 for (const c of CATEGORIES) {
   counts[c.slug] = posts.filter((p) => p.data.category === c.name).length;
+  // 하위 분야별 글 수 (해당 카테고리 + 분야 일치)
+  for (const f of c.children ?? []) {
+    counts[c.slug + "/" + f.slug] = posts.filter(
+      (p) => p.data.category === c.name && (p.data as any).field === f.name
+    ).length;
+  }
 }
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -49,11 +55,30 @@ const isActive = (href: string) =>
   <div class="cat-list">
     <span class="nav-label">categories</span>
     {
-      CATEGORIES.map((c) => (
-        <a href={`/categories/${c.slug}`}>
-          {c.name} <span class="count">{pad(counts[c.slug])}</span>
-        </a>
-      ))
+      CATEGORIES.map((c) =>
+        c.children ? (
+          <div class="cat-group" data-open={isActive(`/categories/${c.slug}`) ? "true" : "false"}>
+            <div class="cat-parent-row">
+              <button class="cat-toggle" aria-expanded={isActive(`/categories/${c.slug}`) ? "true" : "false"} aria-label="하위 분야 펼치기">
+                <span class="tri">›</span>
+              </button>
+              <a href={`/categories/${c.slug}`} class="cat-parent-link">{c.name}</a>
+              <span class="count">{pad(counts[c.slug])}</span>
+            </div>
+            <div class="cat-children">
+              {c.children.map((f) => (
+                <a href={`/categories/${c.slug}/${f.slug}`}>
+                  {f.name} <span class="count">{pad(counts[c.slug + "/" + f.slug])}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <a href={`/categories/${c.slug}`}>
+            {c.name} <span class="count">{pad(counts[c.slug])}</span>
+          </a>
+        )
+      )
     }
   </div>
 
