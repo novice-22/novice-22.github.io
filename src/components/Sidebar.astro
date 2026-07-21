@@ -14,7 +14,8 @@ const isActive = (href: string) =>
   href === "/" ? pathname === "/" : pathname.startsWith(href);
 ---
 
-<aside class="sidebar">
+<aside class="sidebar" transition:persist="sidebar">
+  <div class="sidebar-body">
   <a href="/" class="brand">
     <span class="mark"><span class="at">~/</span>{SITE.title}</span><span class="cursor"></span>
   </a>
@@ -70,5 +71,6 @@ const isActive = (href: string) =>
       }
     </div>
     <button class="theme-toggle" style="margin-top:14px;width:fit-content;">[ dark ]</button>
+  </div>
   </div>
 </aside>

@@ -32,9 +32,7 @@ const allTags = [...categories, ...keywords];
         allTags.length > 0 && (
           <div class="tag-row" data-pagefind-body>
             {allTags.map((tag: string) => (
-              <button type="button" class="hashtag" data-search={tag}>
-                #{tag}
-              </button>
+              <span class="hashtag">#{tag}</span>
             ))}
           </div>
         )
