@@ -89,48 +89,50 @@ a { color: inherit; }
 }
 
 /* ── sidebar collapse ─────────────────────────────────────── */
+/* 토글 아이콘 — 항상 화면 좌상단에 보임(접혀 있어도). 사이드바가 열리면 그 상단에 겹쳐 보임. */
 .side-toggle {
-  /* 사이드바 오른쪽 가장자리(거터)에 붙는 패널 토글 — 접으면 화면 좌상단으로 이동 */
-  position: fixed; top: 18px; z-index: 20;
-  left: calc(var(--side) + 44px);
+  position: fixed; top: 20px; left: 22px; z-index: 45;
   display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
+  width: 34px; height: 34px;
   background: var(--surface); border: 1px solid var(--border);
-  color: var(--text-dim); border-radius: 7px;
+  color: var(--text-dim); border-radius: 8px;
   cursor: pointer;
-  transition: left 0.32s cubic-bezier(0.22, 1, 0.36, 1), color 0.16s ease, border-color 0.16s ease;
+  transition: color 0.16s ease, border-color 0.16s ease;
 }
 .side-toggle:hover { border-color: var(--accent-dim); color: var(--accent); }
-html[data-sidebar="collapsed"] .side-toggle { left: 16px; }
+.side-toggle.pinned { border-color: var(--accent-dim); color: var(--accent); }
 
-/* 데스크톱: 사이드바가 옆으로 밀리며 열리고 닫힘 */
+/* 화면 왼쪽 가장자리 hover 존 — 여기에 마우스 대면 사이드바가 나옴 */
+.edge-hover { position: fixed; top: 0; left: 0; width: 16px; height: 100vh; z-index: 39; }
+@media (max-width: 880px) { .edge-hover { display: none; } }
+
+/* 데스크톱: 사이드바는 화면 왼쪽에 고정(overlay), 본문은 항상 화면 가운데.
+   → 사이드바를 열고 닫아도 본문 위치가 안 밀림. */
 @media (min-width: 881px) {
-  .layout {
-    transition:
-      grid-template-columns 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-      gap 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  /* 본문은 항상 화면 가운데 전체폭. 사이드바는 왼쪽에 숨겨뒀다가
+     아이콘/사이드바에 마우스를 올리면 오버레이로 나오고, 벗어나면 들어감. */
+  .layout { display: block; padding: 0; }
+  .layout .main {
+    max-width: 860px; width: 100%;
+    margin: 0 auto;
+    padding: 56px 28px 80px;
   }
-  .sidebar {
-    transition:
-      opacity 0.2s ease,
-      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 0s;
+  .layout .sidebar {
+    position: fixed; top: 0; left: 0;
+    width: var(--side); height: 100vh;
+    padding: 0;
+    background: var(--bg-soft);
+    border-right: 1px solid var(--border-soft);
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.35);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 40;
   }
-  /* 닫히는 동안 폭이 줄어도 내부 텍스트가 재배치되지 않게 고정 */
-  .sidebar > * { min-width: var(--side); }
-  .sidebar .about-blurb { min-width: 240px; }
-
-  html[data-sidebar="collapsed"] .layout { grid-template-columns: 0px 1fr; gap: 0; }
-  html[data-sidebar="collapsed"] .sidebar {
-    opacity: 0;
-    transform: translateX(-28px);
-    pointer-events: none;
-    visibility: hidden;
-    transition:
-      opacity 0.2s ease,
-      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
-      visibility 0s linear 0.32s;
-  }
+  /* 상단 여백은 아이콘(20+34) 높이만큼만 확보 → 여백 최소화 */
+  .layout .sidebar-body { padding: 64px 26px 24px; }
+  /* 핀 고정(클릭) 또는 마우스 올림(peek) 시 나타남 */
+  html[data-sidebar="open"] .layout .sidebar,
+  .layout .sidebar.peek { transform: translateX(0); }
 }
 
 /* ── sidebar / identity ───────────────────────────────────── */
@@ -138,11 +140,17 @@ html[data-sidebar="collapsed"] .side-toggle { left: 16px; }
   padding: 56px 0;
   position: sticky; top: 0; align-self: start;
   height: 100vh;
-  overflow-y: auto; overflow-x: hidden;
-  scrollbar-width: none; /* 스크롤바 숨김 (휠·터치 스크롤은 동작) */
+  overflow: hidden; /* 스크롤은 안쪽 .sidebar-body 가 담당 */
   display: flex; flex-direction: column;
 }
-.sidebar::-webkit-scrollbar { display: none; }
+/* 상단 토글은 고정, 본문만 스크롤(드래그) */
+.sidebar-body {
+  flex: 1; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: none; /* 스크롤바 숨김 (휠·드래그 스크롤은 동작) */
+  display: flex; flex-direction: column;
+}
+.sidebar-body::-webkit-scrollbar { display: none; }
 .brand { display: flex; align-items: baseline; gap: 2px; text-decoration: none; }
 .brand .mark {
   font-family: var(--mono); font-weight: 600; font-size: 30px;
@@ -297,7 +305,7 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .more:hover .arr { transform: translateX(4px); }
 
 /* ── article / post detail ────────────────────────────────── */
-.article { max-width: 720px; }
+.article { max-width: 720px; margin: 0 auto; }
 .back-link {
   font-family: var(--mono); font-size: 12px; color: var(--text-faint);
   text-decoration: none; display: inline-flex; gap: 7px; margin-bottom: 30px;
@@ -388,12 +396,11 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 /* 해시태그 (글·뉴스 상단) */
 .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .hashtag {
+  display: inline-block;
   font-family: var(--mono); font-size: 12px; color: var(--accent-dim);
-  text-decoration: none; border: 1px solid var(--border);
-  border-radius: 6px; padding: 3px 10px; transition: all 0.16s ease;
-  background: none; cursor: pointer; line-height: 1.6;
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 10px; line-height: 1.6;
 }
-.hashtag:hover { color: var(--accent); border-color: var(--accent-dim); background: var(--surface); }
 
 /* 사이드바 검색 바 */
 .sb-search { position: relative; margin-top: 22px; }
@@ -428,6 +435,9 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .page-intro { margin-bottom: 6px; }
 .page-intro p { color: var(--text-dim); font-size: 15px; margin-top: 10px; max-width: 640px; line-height: 1.7; }
 
+/* 소개 페이지 — 가운데 정렬된 좁은 컬럼 */
+.about-page { max-width: 600px; margin: 0 auto; }
+
 .about-section { margin-top: 38px; }
 .about-section .nav-label { margin-bottom: 14px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -461,9 +471,8 @@ footer a:hover { color: var(--accent); }
 /* ── responsive ───────────────────────────────────────────── */
 @media (max-width: 880px) {
   .layout { grid-template-columns: 1fr; gap: 0; padding: 0 22px; }
-  .side-toggle, html[data-sidebar="collapsed"] .side-toggle { left: auto; right: 16px; }
-  html[data-sidebar="collapsed"] .sidebar { display: none; }
-  .sidebar { position: static; height: auto; padding: 40px 0 28px; border-bottom: 1px solid var(--border-soft); }
+  .side-toggle { display: none; } /* 모바일: 사이드바 항상 스택으로 표시 */
+  .sidebar { position: static; height: auto; padding: 40px 0 28px; border-bottom: 1px solid var(--border-soft); transform: none !important; box-shadow: none; background: none; }
   .social { margin-top: 28px; flex-direction: row; flex-wrap: wrap; gap: 18px; align-items: center; }
   .social-links { flex-direction: row; flex-wrap: wrap; gap: 18px; }
   .main { padding: 36px 0 60px; }

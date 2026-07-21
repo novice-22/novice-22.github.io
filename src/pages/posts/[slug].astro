@@ -31,9 +31,9 @@ const toc = headings.filter((h) => h.depth <= 2);
       {
         (tags.length > 0 || category) && (
           <div class="tag-row" data-pagefind-body>
-            <button type="button" class="hashtag" data-search={category}>#{category}</button>
+            <span class="hashtag">#{category}</span>
             {tags.map((t: string) => (
-              <button type="button" class="hashtag" data-search={t}>#{t}</button>
+              <span class="hashtag">#{t}</span>
             ))}
           </div>
         )
