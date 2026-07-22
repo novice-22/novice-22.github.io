@@ -154,14 +154,15 @@ const links = SOCIAL.filter((s) => s.label !== "RSS");
     function initVisitors() {
       // stats 영역이 없는 페이지(홈 아님)면 건너뜀
       if (!document.querySelector('[data-visitors="total"]')) return;
-      // 오늘 이미 방문 기록했는지 (하루 1회) — 한국시간 기준 날짜
-      var kst = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
-      var seen = localStorage.getItem("visitDay") === kst;
-      var url = api + (seen ? "/stats" : "/visit");
-      fetch(url, { method: seen ? "GET" : "POST" })
+      // 중복 방문 판별은 Worker가 IP+UA 해시로 처리(하루 1회).
+      // 여기선 같은 세션에서 홈을 여러 번 오갈 때만 /visit 반복 요청을 막고(그 외엔 /stats),
+      // 새 세션(브라우저 새로 옴)이면 /visit 로 방문 신호를 보낸다.
+      var visited = sessionStorage.getItem("visited") === "1";
+      var url = api + (visited ? "/stats" : "/visit");
+      fetch(url, { method: visited ? "GET" : "POST" })
         .then(function (r) { return r.json(); })
         .then(function (s) {
-          if (!seen) localStorage.setItem("visitDay", kst);
+          sessionStorage.setItem("visited", "1");
           paint(s);
         })
         .catch(function () {});
