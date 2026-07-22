@@ -30,7 +30,7 @@ function rehypeDownloadImages() {
         if (!/^https?:\/\//.test(realUrl)) return; // 이미 로컬이면 통과
         try {
           const res = await fetch(realUrl, {
-            headers: { "User-Agent": "urim-blog/1.0 (+https://novice-22.com)" },
+            headers: { "User-Agent": "novice-22-blog/1.0 (+https://novice-22.com)" },
           });
           if (!res.ok) return;
           const buf = Buffer.from(await res.arrayBuffer());

@@ -10,6 +10,7 @@ interface Props {
 }
 const { title, description = SITE.description } = Astro.props;
 const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SITE.tagline}`;
+const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
 ---
 
 <!doctype html>
@@ -52,6 +53,7 @@ const fullTitle = title ? `${title} · ${SITE.title}` : `${SITE.title} — ${SIT
     <div class="layout">
       <Sidebar />
       <main class="main">
+        {!isHome && <a href="/" class="home-link">← 홈</a>}
         <slot />
         <footer>
           <span>© {new Date().getFullYear()} {SITE.title}</span>
