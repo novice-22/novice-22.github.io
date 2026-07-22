@@ -2,23 +2,242 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
 import { getCollection } from "astro:content";
+import { SITE, CATEGORIES, SOCIAL, VISITOR_API } from "../consts";
+import { formatDate } from "../utils";
 
 const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
-const recent = posts.slice(0, 6);
-const total = posts.length;
+const news = (await getCollection("news")).sort(
+  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+);
+
+const recentPosts = posts.slice(0, 5);
+const recentNews = news.slice(0, 5);
 const pad = (n: number) => String(n).padStart(2, "0");
+
+// 카테고리별 글 수
+const catCounts = CATEGORIES.map((c) => ({
+  name: c.name,
+  slug: c.slug,
+  count: posts.filter((p) => p.data.category === c.name).length,
+}));
+
+// 방문자 수 — 자리표시자(placeholder). 나중에 Cloudflare Workers 카운터로 교체.
+const visitors = { total: 0, today: 0, yesterday: 0 };
+
+// 뉴스 슬러그(날짜 기반)
+const newsSlug = (item: any) => {
+  const d = new Date(item.data.date);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
+const links = SOCIAL.filter((s) => s.label !== "RSS");
 ---
 
 <BaseLayout>
-  <div class="main-head">
+  <!-- 인트로 (히어로) -->
+  <section class="hero">
+    <div class="hero-prompt"><span class="hero-sign">$</span> whoami</div>
+    <h1 class="hero-name">{SITE.title}</h1>
+    <p class="hero-desc">{SITE.description}</p>
+    <div class="hero-links">
+      {
+        links.map((s) => (
+          <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" class="hero-link">
+            {s.label} <span class="arr">↗</span>
+          </a>
+        ))
+      }
+      <a href="/about" class="hero-link">소개 <span class="arr">→</span></a>
+    </div>
+  </section>
+
+  <!-- 방문자 수 (Cloudflare Workers 카운터) -->
+  <section class="visitors" aria-label="방문자 수">
+    <span class="v-tag"><span class="v-dot"></span>방문자수</span>
+    <div class="v-items">
+      <span class="v-item">
+        <span class="v-k">전체</span>
+        <span class="v-n" data-visitors="total">{visitors.total.toLocaleString()}</span>
+      </span>
+      <span class="v-divider"></span>
+      <span class="v-item">
+        <span class="v-k">오늘</span>
+        <span class="v-n" data-visitors="today">{visitors.today.toLocaleString()}</span>
+      </span>
+    </div>
+  </section>
+
+  {/* 일일 방문 추이 그래프 — 잠시 숨김(나중에 켜기). KV 일별 기록은 계속 쌓임.
+  <section class="vgraph-sec" aria-label="일일 방문 추이">
+    <div class="vgraph-head">
+      <span class="vgraph-title">방문 추이 <span class="vgraph-sub">최근 30일</span></span>
+      <span class="vgraph-peak" data-vgraph-peak></span>
+    </div>
+    <div class="vgraph" id="vgraph"></div>
+  </section>
+  */}
+
+  <!-- 최근 글 -->
+  <div class="main-head sec-head">
     <h1><span class="dot"></span> 최근 글</h1>
-    <span class="meta">{pad(total)} posts</span>
+    <span class="meta">{pad(posts.length)} posts</span>
   </div>
   <div class="rule"></div>
+  {
+    recentPosts.length > 0 ? (
+      <div class="feed">
+        {recentPosts.map((post, i) => (
+          <PostCard post={post} index={i + 1} />
+        ))}
+      </div>
+    ) : (
+      <div class="page-intro"><p>아직 글이 없어요. 첫 글을 기다리는 중.</p></div>
+    )
+  }
 
-  <div class="feed">
-    {recent.map((post, i) => <PostCard post={post} index={i + 1} />)}
+  <!-- 최근 보안뉴스 -->
+  <div class="main-head sec-head">
+    <h1><span class="dot"></span> 최근 보안뉴스</h1>
+    <a href="/news" class="more-sm">더보기 →</a>
+  </div>
+  <div class="rule"></div>
+  {
+    recentNews.length > 0 ? (
+      <ul class="news-mini">
+        {recentNews.map((item) => (
+          <li>
+            <a href={`/news/${newsSlug(item)}`}>
+              <span class="nm-date">{formatDate(new Date(item.data.date))}</span>
+              <span class="nm-title">{item.data.title}</span>
+              {item.data.categories.length > 0 && (
+                <span class="nm-cat">{item.data.categories[0]}</span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="page-intro"><p>발행된 보안뉴스가 없어요.</p></div>
+    )
+  }
+
+  <!-- 카테고리별 -->
+  <div class="main-head sec-head">
+    <h1><span class="dot"></span> 카테고리</h1>
+  </div>
+  <div class="rule"></div>
+  <div class="cat-grid">
+    {
+      catCounts.map((c) => (
+        <a href={`/categories/${c.slug}`} class="cat-tile">
+          <span class="ct-name">{c.name}</span>
+          <span class="ct-count">{pad(c.count)}</span>
+        </a>
+      ))
+    }
   </div>
 </BaseLayout>
+
+<script is:inline define:vars={{ api: VISITOR_API }}>
+  (function () {
+    function fmt(n) { return (n || 0).toLocaleString("en-US"); }
+    function paint(s) {
+      var t = document.querySelector('[data-visitors="total"]');
+      var to = document.querySelector('[data-visitors="today"]');
+      var y = document.querySelector('[data-visitors="yesterday"]');
+      if (t) t.textContent = fmt(s.total);
+      if (to) to.textContent = fmt(s.today);
+      if (y) y.textContent = fmt(s.yesterday);
+    }
+    function initVisitors() {
+      // stats 영역이 없는 페이지(홈 아님)면 건너뜀
+      if (!document.querySelector('[data-visitors="total"]')) return;
+      // 오늘 이미 방문 기록했는지 (하루 1회) — 한국시간 기준 날짜
+      var kst = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+      var seen = localStorage.getItem("visitDay") === kst;
+      var url = api + (seen ? "/stats" : "/visit");
+      fetch(url, { method: seen ? "GET" : "POST" })
+        .then(function (r) { return r.json(); })
+        .then(function (s) {
+          if (!seen) localStorage.setItem("visitDay", kst);
+          paint(s);
+        })
+        .catch(function () {});
+    }
+    // 이 스크립트는 홈이 로드될 때마다(SPA 전환 포함) 다시 실행되므로 직접 호출
+    initVisitors();
+
+    /* ── 일일 방문 추이 그래프 (직선 스파이크) — 잠시 숨김. 필요하면 이 블록 주석 해제 + 위 HTML 주석 해제 ──
+    function linePath(pts) {
+      if (!pts.length) return "";
+      return "M" + pts.map(function (p) { return p.x + "," + p.y; }).join(" L");
+    }
+    function drawGraph(data) {
+      var box = document.getElementById("vgraph");
+      if (!box) return;
+      var W = 720, H = 96, padL = 4, padR = 4, padT = 10, padB = 6;
+      var innerW = W - padL - padR, innerH = H - padT - padB;
+      var max = Math.max(1, ...data.map(function (d) { return d.count; }));
+      var stepX = data.length > 1 ? innerW / (data.length - 1) : 0;
+      var pts = data.map(function (d, i) {
+        return { x: padL + i * stepX, y: padT + innerH - (d.count / max) * innerH, count: d.count, date: d.date };
+      });
+      var line = linePath(pts);
+
+      // 최고 기록 라벨
+      var peakEl = document.querySelector("[data-vgraph-peak]");
+      var peak = data.reduce(function (a, b) { return b.count > a.count ? b : a; }, { count: 0 });
+      if (peakEl) peakEl.textContent = peak.count > 0 ? "최고 " + peak.count + "명 (" + peak.date.slice(5) + ")" : "";
+
+      box.innerHTML =
+        '<svg class="vg-svg" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img">' +
+        '<line class="vg-base" x1="' + padL + '" y1="' + (padT + innerH) + '" x2="' + (W - padR) + '" y2="' + (padT + innerH) + '"/>' +
+        '<path class="vg-line" d="' + line + '"/>' +
+        '<line class="vg-cross" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + innerH) + '" style="display:none"/>' +
+        '<circle class="vg-dot" r="3.5" style="display:none"/>' +
+        "</svg>" +
+        '<div class="vg-tip" hidden></div>';
+
+      // 호버 인터랙션
+      var svg = box.querySelector(".vg-svg");
+      var cross = box.querySelector(".vg-cross");
+      var dot = box.querySelector(".vg-dot");
+      var tip = box.querySelector(".vg-tip");
+      box.addEventListener("mousemove", function (e) {
+        var r = svg.getBoundingClientRect();
+        var relX = ((e.clientX - r.left) / r.width) * W;
+        var i = Math.max(0, Math.min(data.length - 1, Math.round((relX - padL) / (stepX || 1))));
+        var p = pts[i];
+        cross.setAttribute("x1", p.x); cross.setAttribute("x2", p.x); cross.style.display = "";
+        dot.setAttribute("cx", p.x); dot.setAttribute("cy", p.y); dot.style.display = "";
+        tip.hidden = false;
+        tip.innerHTML = '<b>' + p.count + '명</b> · ' + p.date.slice(5).replace("-", ".");
+        var px = (p.x / W) * r.width;
+        tip.style.left = Math.max(0, Math.min(r.width - 90, px - 45)) + "px";
+      });
+      box.addEventListener("mouseleave", function () {
+        cross.style.display = "none"; dot.style.display = "none"; tip.hidden = true;
+      });
+    }
+    function emptyDays(n) {
+      var arr = [];
+      for (var i = n - 1; i >= 0; i--) {
+        var d = new Date(Date.now() - i * 86400000).toISOString().slice(0, 10);
+        arr.push({ date: d, count: 0 });
+      }
+      return arr;
+    }
+    function initGraph() {
+      if (!document.getElementById("vgraph")) return;
+      drawGraph(emptyDays(30)); // 우선 빈 기준선 표시 (요청 실패해도 그래프 영역 유지)
+      fetch(api + "/daily?days=30", { method: "GET" })
+        .then(function (r) { return r.json(); })
+        .then(function (data) { if (Array.isArray(data) && data.length) drawGraph(data); })
+        .catch(function () {});
+    }
+    initGraph();
+    ── 그래프 블록 끝 ── */
+  })();
+</script>

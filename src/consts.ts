@@ -5,10 +5,10 @@
 export const SITE = {
   // astro.config.mjs 의 site 와 동일하게 유지
   url: "https://novice-22.com",
-  title: "urim",
+  title: "novice-22",
   tagline: "security research log",
   description: "취약점 분석 · 버그바운티 · CTF 기록. 발견한 것들을 글로 남기는 공간.",
-  author: "urim",
+  author: "novice-22",
 };
 
 // 사이드바 메뉴
@@ -35,6 +35,9 @@ export const CATEGORIES = [
   { slug: "report", name: "취약점 제보" },
   { slug: "project", name: "프로젝트" },
 ];
+
+// 방문자 카운터 Worker 주소 (Cloudflare Workers)
+export const VISITOR_API = "https://visitor-counter.gmemod6602.workers.dev";
 
 // 외부 링크
 export const SOCIAL = [

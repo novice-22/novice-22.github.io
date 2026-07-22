@@ -1,4 +1,4 @@
-# urim — security research log
+# novice-22 — security research log
 
 Astro 기반 정적 기술 블로그. 다크 "research log" 디자인, 코드 하이라이팅·목차·RSS·다크/라이트 토글 포함.
 기본은 로컬 마크다운으로 바로 동작하고, 준비되면 Notion을 CMS로 붙일 수 있습니다.
