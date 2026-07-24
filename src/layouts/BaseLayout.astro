@@ -150,6 +150,21 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
           sidebar.addEventListener("focusout", scheduleHide);
           syncPin();
 
+          // 사이드바(오버레이) 위에서 휠 스크롤이 뒤 메인 페이지로 넘어가지 않게.
+          // 사이드바가 더 스크롤할 게 없으면 휠 입력을 흡수(preventDefault)한다.
+          // 모바일 스택 레이아웃에선 사이드바가 문서 흐름 안이라 정상 스크롤 허용.
+          var sbBody = sidebar.querySelector(".sidebar-body");
+          sidebar.addEventListener("wheel", function (e) {
+            if (!window.matchMedia("(min-width: 881px)").matches) return;
+            var el = sbBody || sidebar;
+            var canScroll = el.scrollHeight > el.clientHeight + 1;
+            var atTop = el.scrollTop <= 0;
+            var atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+            if (!canScroll || (e.deltaY < 0 && atTop) || (e.deltaY > 0 && atBottom)) {
+              e.preventDefault();
+            }
+          }, { passive: false });
+
           // 검색 (Pagefind 실시간 드롭다운)
           var input = document.getElementById("site-search");
           var resBox = document.getElementById("site-search-results");
