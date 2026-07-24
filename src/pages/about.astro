@@ -32,7 +32,13 @@ import { ABOUT } from "../consts";
               <div class="fact">
                 <span class="k">{it.when}</span>
                 <span class="v">
-                  {it.name}
+                  {"href" in it && it.href ? (
+                    <a class="fact-link" href={it.href} target="_blank" rel="noopener">
+                      {it.name}
+                    </a>
+                  ) : (
+                    it.name
+                  )}
                   {it.desc && <span class="d"> — {it.desc}</span>}
                 </span>
               </div>

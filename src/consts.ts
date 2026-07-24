@@ -11,6 +11,13 @@ export const SITE = {
   author: "novice-22",
 };
 
+// 홈 히어로의 소속 한 줄 — [라벨 : 이름] 형태로 나란히 표시됩니다.
+// role 은 선택(있으면 이름 뒤에 괄호로 붙음). 항목을 추가하면 " | " 로 자동 구분.
+export const AFFILIATIONS = [
+  { label: "CTF Team", name: "RubiyaLab" },
+  { label: "CTF 소그룹", name: "RubiyaLab Holiday", role: "Group Lead" },
+];
+
 // 사이드바 메뉴
 export const NAV = [
   { label: "홈", href: "/" },
@@ -58,61 +65,99 @@ export const ABOUT = {
   //    사이드바 문구와 겹치지 않게, 좀 더 "사람"이 보이는 문장으로.
   //    예: "취약점을 찾고 분석하는 과정을 좋아합니다."
   lines: [
-    "취약점을 찾고, 분석하고, 재현하는 과정을 좋아합니다.",
-    "웹과 IoT를 주로 다루고, 직접 만든 진단 환경에서 실험한 것들을 기록합니다.",
-    "(→ 본인 어필 문장으로 자유롭게 수정하세요)",
+    "모의해킹 분야 취업을 준비하고 있습니다.",
+    "RubiyaLab 소속으로 CTF에 참여하고, 오픈소스 취약점 제보와 버그바운티를 하고 있습니다.",
+    "보안 관련 개발도 좋아해서, 취미로 도구를 만들어보고 있습니다.",
   ],
 
   // ② 관심 분야 태그 — 증명용 스킬이 아니라 "요즘 파는 것" 태그.
   //    자유롭게 추가/삭제.
-  skills: ["Web", "1-day 분석", "IoT/펌웨어", "DevSecOps", "CTF"],
+  skills: ["Web", "IoT/펌웨어", "AI/MCP", "1-day 분석", "버그바운티", "CTF"],
 
   // ③ 이력 — 이력서 스타일 섹션. 항목이 하나도 없는 섹션은 페이지에 표시되지 않음.
   //    when: 연도/기간(비워도 됨) · name: 이름 · desc: 한 줄 설명(선택)
   //    ▼ 아래 (괄호) 부분을 실제 내용으로 채우세요.
+  //   ▼ 섹션 순서 = 페이지 표시 순서.
   resume: [
+    {
+      label: "CTF · Wargame",
+      items: [
+        { when: "2025.12 ~ 현재", name: "RubiyaLab", desc: "", href: "https://rubiyalab.team/" },
+        { when: "2026.08 ~ 현재", name: "RubiyaLab Holiday", desc: "소그룹 · Group Lead" },
+        { when: "", name: "", desc: "" }, // 한 줄 간격 (CTF ↔ Wargame 구분)
+        { when: "webhacking.kr", name: "novice-22 · 랭킹 12위 (6695점, all clear)", desc: "", href: "https://webhacking.kr" },
+      ],
+    },
     {
       label: "교육 · 수료",
       items: [
-        { when: "20XX", name: "K-Shield Jr. (기수 채우기)", desc: "" },
-      ],
-    },
-    {
-      label: "자격증",
-      items: [
-        { when: "20XX.XX", name: "(자격증 이름 채우기)", desc: "" },
-      ],
-    },
-    {
-      label: "활동",
-      items: [
-        { when: "20XX~", name: "CTF 팀 (팀 이름 채우기)", desc: "(포지션/분야 한 줄)" },
-        { when: "", name: "DreamHack · 자작 진단 랩", desc: "" },
+        { when: "2026.03~05", name: "K-Shield Jr. 16기 모의해킹 및 취약점 진단", desc: "" },
+        { when: "2026.06", name: "버그헌팅 실습훈련 중급과정 [8차]", desc: "KISA 실전형 사이버훈련장 (Security-Gym)" },
       ],
     },
     {
       label: "프로젝트",
       items: [
-        { when: "20XX", name: "(프로젝트 이름 채우기)", desc: "(뭘 만들었고 뭘 배웠는지 한 줄)" },
+        {
+          when: "2026.03~05",
+          name: "IoT 취약점 분석 프로젝트",
+          desc: "K-Shield Jr. 16기 모의해킹 및 취약점 진단",
+        },
+        {
+          when: "2026.06~07",
+          name: "1-day 취약점 분석 프로젝트",
+          desc: "KISA 정보보안 프로젝트 멘토링 · Team Lead",
+        },
       ],
     },
     {
       label: "수상 · 성과",
       items: [
-        { when: "20XX.XX", name: "(대회/공모전 이름 · 순위 채우기)", desc: "" },
+        {
+          when: "2026.08",
+          name: "Black Hat USA 2026 · MSRC 비공개 행사 초청",
+          desc: "invite-only researcher celebration",
+        },
+        { when: "2026.05", name: "IoT 취약점 분석 프로젝트", desc: "최우수 프로젝트" },
+      ],
+    },
+    // 오픈소스 취약점 제보 — GitHub 프로젝트 대상. 새 제보는 아래 줄에 계속 추가.
+    //   패턴: { when: "대상 프로젝트", name: "CVE 번호(또는 발급 대기)", desc: "CWE 등 비고" }
+    {
+      label: "취약점 제보 · 오픈소스 (CVE)",
+      items: [
+        { when: "mcpvault", name: "CVE-2026-57441", desc: "", href: "https://github.com/bitbonsai/mcpvault/security/advisories/GHSA-j99q-93c9-h869" },
+        { when: "browse-mcp", name: "CVE-2026-55557", desc: "", href: "https://github.com/That1Drifter/browse-mcp/security/advisories/GHSA-m9mq-7m7q-xc6p" },
+        { when: "pdf-reader-mcp", name: "CVE-2026-62264", desc: "", href: "https://github.com/SylphxAI/pdf-reader-mcp/security/advisories/GHSA-q344-5v34-gm84" },
+        { when: "mssql-mcp-core", name: "CVE-2026-63129", desc: "", href: "https://github.com/ConnorBritain/mssql-mcp-core/security/advisories/GHSA-2m9m-6cr5-9x25" },
+        { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-76pm-mq2q-9gcr" },
+        { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
+        { when: "fast-agent", name: "CVE 발급 대기", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
+      ],
+    },
+    // 버그바운티 — 플랫폼별로 항목이 쌓임.
+    //   · 같은 플랫폼(FinderGap 등)에서 리포트가 더 나오면 그 아래 줄만 추가.
+    //   · 새 플랫폼(HackerOne 등)이 생기면 when 에 플랫폼명을 넣어 이어서 추가.
+    //   패턴: { when: "플랫폼", name: "리포트번호", desc: "상태 · 포인트" }
+    {
+      label: "버그바운티",
+      items: [
+        { when: "FinderGap", name: "FVE-2026-615c-74655", desc: "유효 리포트 · 47 point" },
       ],
     },
     {
-      label: "취약점 제보",
+      label: "자격증",
       items: [
-        { when: "20XX.XX", name: "(KVE/CVE 번호 또는 제보 대상 채우기)", desc: "(취약점 종류 한 줄)" },
+        { when: "2026", name: "정보보안기사", desc: "필기 합격 · 실기 2회차 준비 중" },
+        { when: "2023.05", name: "정보보안산업기사", desc: "" },
+        { when: "2022.07", name: "리눅스마스터 2급", desc: "" },
+        { when: "2022.04", name: "네트워크관리사 2급", desc: "" },
       ],
     },
-    // ▼ 경력이 생기면 여기에 채우세요 (비어 있는 동안은 페이지에 안 보임).
     {
       label: "경력",
       items: [
-        // 예: { when: "2027.01~", name: "회사 이름 — 보안 컨설팅 인턴", desc: "웹 취약점 진단" },
+        { when: "2023 ~ 2025", name: "공군 정보보호병", desc: "" },
       ],
     },
   ],
