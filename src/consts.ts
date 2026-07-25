@@ -83,7 +83,7 @@ export const ABOUT = {
       label: "CTF · Wargame",
       items: [
         { when: "2025.12 ~ 현재", name: "RubiyaLab", desc: "", href: "https://rubiyalab.team/" },
-        { when: "2026.08 ~ 현재", name: "RubiyaLab Holiday", desc: "소그룹 · Group Lead" },
+        { when: "2026.08 ~ 현재", name: "RubiyaLab Holiday", desc: "소그룹 · Group Lead", href: "https://ctftime.org/team/443097" },
         { when: "", name: "", desc: "" }, // 한 줄 간격 (CTF ↔ Wargame 구분)
         { when: "webhacking.kr", name: "novice-22 · 랭킹 12위 (6695점, all clear)", desc: "", href: "https://webhacking.kr" },
       ],
