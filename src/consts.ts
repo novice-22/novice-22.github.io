@@ -51,6 +51,7 @@ export const SOCIAL = [
   { label: "GITHUB", href: "https://github.com/novice-22" },
   { label: "NOTION", href: "https://notion.novice-22.com" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
+  { label: "VOCA", href: "https://voca.novice-22.com" },
   { label: "RSS", href: "/rss.xml" },
 ];
 
