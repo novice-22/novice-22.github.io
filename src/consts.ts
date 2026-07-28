@@ -19,7 +19,7 @@ export const AFFILIATIONS = [
     { label: "CTF 소그룹", name: "RubiyaLab Holiday", role: "Group Lead" },
   ],
   [
-    { label: "Research Team", name: "Quple" },
+    { label: "Research Team", name: "Quble" },
   ],
 ];
 
