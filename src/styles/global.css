@@ -316,6 +316,8 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .hero-affil .af-v { color: var(--accent); font-weight: 600; }
 .hero-affil .af-role { color: var(--text-dim); font-weight: 500; }
 .hero-affil .af-pipe { color: var(--text-faint); opacity: 0.6; margin: 0 3px; }
+/* 소속 두 번째 줄부터는 간격 좁게(첫 줄만 위 여백) */
+.hero-affil + .hero-affil { margin-top: 2px; }
 
 .hero-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 .hero-link {

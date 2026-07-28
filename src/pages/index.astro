@@ -40,18 +40,20 @@ const links = SOCIAL.filter((s) => s.label !== "RSS");
   <section class="hero">
     <div class="hero-prompt"><span class="hero-sign">$</span> whoami</div>
     <h1 class="hero-name">{SITE.title}</h1>
-    <p class="hero-affil">
-      {
-        AFFILIATIONS.map((a, i) => (
-          <>
-            {i > 0 && <span class="af-pipe">|</span>}
-            <span class="af-k">{a.label} :</span>
-            <span class="af-v">{a.name}</span>
-            {a.role && <span class="af-role">({a.role})</span>}
-          </>
-        ))
-      }
-    </p>
+    {
+      AFFILIATIONS.map((line) => (
+        <p class="hero-affil">
+          {line.map((a, i) => (
+            <>
+              {i > 0 && <span class="af-pipe">|</span>}
+              <span class="af-k">{a.label} :</span>
+              <span class="af-v">{a.name}</span>
+              {a.role && <span class="af-role">({a.role})</span>}
+            </>
+          ))}
+        </p>
+      ))
+    }
     <div class="hero-links">
       {
         links.map((s) => (

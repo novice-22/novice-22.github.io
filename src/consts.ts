@@ -11,11 +11,16 @@ export const SITE = {
   author: "novice-22",
 };
 
-// 홈 히어로의 소속 한 줄 — [라벨 : 이름] 형태로 나란히 표시됩니다.
-// role 은 선택(있으면 이름 뒤에 괄호로 붙음). 항목을 추가하면 " | " 로 자동 구분.
+// 홈 히어로의 소속 — 바깥 배열의 각 원소가 "한 줄".
+// 한 줄 안 항목은 [라벨 : 이름] 형태로 " | " 로 이어짐. role 은 선택(이름 뒤 괄호).
 export const AFFILIATIONS = [
-  { label: "CTF Team", name: "RubiyaLab" },
-  { label: "CTF 소그룹", name: "RubiyaLab Holiday", role: "Group Lead" },
+  [
+    { label: "CTF Team", name: "RubiyaLab" },
+    { label: "CTF 소그룹", name: "RubiyaLab Holiday", role: "Group Lead" },
+  ],
+  [
+    { label: "Research Team", name: "Quple" },
+  ],
 ];
 
 // 사이드바 메뉴
