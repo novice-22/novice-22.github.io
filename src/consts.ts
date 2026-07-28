@@ -86,12 +86,14 @@ export const ABOUT = {
   //   ▼ 섹션 순서 = 페이지 표시 순서.
   resume: [
     {
-      label: "CTF · Wargame",
+      label: "CTF · Wargame · Research",
       items: [
         { when: "2025.12 ~ 현재", name: "RubiyaLab", desc: "", href: "https://rubiyalab.team/" },
         { when: "2026.08 ~ 현재", name: "RubiyaLab Holiday", desc: "소그룹 · Group Lead", href: "https://ctftime.org/team/443097" },
         { when: "", name: "", desc: "" }, // 한 줄 간격 (CTF ↔ Wargame 구분)
         { when: "webhacking.kr", name: "novice-22 · 랭킹 12위 (6695점, all clear)", desc: "", href: "https://webhacking.kr" },
+        { when: "", name: "", desc: "" }, // 한 줄 간격 (Wargame ↔ Research 구분)
+        { when: "2026.07 ~ 현재", name: "Quble", desc: "Research Team" },
       ],
     },
     {
@@ -138,7 +140,9 @@ export const ABOUT = {
         { when: "mssql-mcp-core", name: "CVE-2026-63129", desc: "", href: "https://github.com/ConnorBritain/mssql-mcp-core/security/advisories/GHSA-2m9m-6cr5-9x25" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-76pm-mq2q-9gcr" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
+        { when: "nginx-ui", name: "CVE 발급 대기", desc: "" },
         { when: "fast-agent", name: "CVE 발급 대기", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
+        { when: "neo", name: "CVE 발급 대기", desc: "" },
       ],
     },
     // 버그바운티 — 플랫폼별로 항목이 쌓임.
