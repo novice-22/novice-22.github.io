@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Sidebar from "../components/Sidebar.astro";
-import { SITE } from "../consts";
+import { SITE, VISITOR_API } from "../consts";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
@@ -38,7 +38,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
       href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
     />
     <ClientRouter />
-    <script is:inline>
+    <script is:inline define:vars={{ visitorApi: VISITOR_API }}>
       // FOUC 방지: 렌더 전 테마·사이드바 상태 적용
       (function () {
         var t = localStorage.getItem("theme") || "dark";
@@ -46,6 +46,8 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
         var s = localStorage.getItem("sidebar") || "collapsed";
         document.documentElement.setAttribute("data-sidebar", s);
       })();
+      // 방문자 카운터 Worker 주소를 전역에 노출 (모든 페이지에서 접근용).
+      window.__VISITOR_API = visitorApi;
     </script>
 
     <!-- Cloudflare Web Analytics (방문자 통계) -->
@@ -259,9 +261,29 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
         });
       }
 
+      // 방문자 수 — 홈에만 있는 [data-visitors] 영역을 Cloudflare Worker 값으로 갱신.
+      // 모든 페이지 로드(전환 포함)에서 호출되므로, 어느 페이지로 들어와 홈으로 와도 동작한다.
+      // 중복 방문 판별은 Worker(IP+UA 해시)가 처리. 세션 첫 방문만 POST /visit, 이후 GET /stats.
+      function initVisitors() {
+        var api = window.__VISITOR_API;
+        if (!api || !document.querySelector('[data-visitors="total"]')) return;
+        var visited = sessionStorage.getItem("visited") === "1";
+        fetch(api + (visited ? "/stats" : "/visit"), { method: visited ? "GET" : "POST" })
+          .then(function (r) { return r.json(); })
+          .then(function (s) {
+            sessionStorage.setItem("visited", "1");
+            var t = document.querySelector('[data-visitors="total"]');
+            var to = document.querySelector('[data-visitors="today"]');
+            if (t) t.textContent = (s.total || 0).toLocaleString("en-US");
+            if (to) to.textContent = (s.today || 0).toLocaleString("en-US");
+          })
+          .catch(function () {});
+      }
+
       function perPage() {
         syncTheme();
         applySort();
+        initVisitors();
         // 사이드바가 유지되므로 현재 경로 기준으로 메뉴 active 갱신
         var path = location.pathname.replace(/\/$/, "") || "/";
         document.querySelectorAll(".nav-block a").forEach(function (a) {
