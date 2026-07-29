@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PostCard from "../../components/PostCard.astro";
+import SortBar from "../../components/SortBar.astro";
 import { getCollection } from "astro:content";
 import { CATEGORIES } from "../../consts";
 
@@ -28,6 +29,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
   </div>
   <div class="rule"></div>
 
+  {posts.length > 1 && <SortBar />}
   {
     posts.length > 0 ? (
       <div class="feed">

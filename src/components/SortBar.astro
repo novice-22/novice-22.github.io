@@ -1,0 +1,26 @@
+---
+// 글 목록 정렬 드롭다운. 정적 사이트라 JS(applySort)가 .feed 항목을
+// CSS order 로 즉시 재배치한다. 선택은 전역(localStorage) 저장.
+---
+
+<div class="sortbar">
+  <div class="sortmenu" data-sortmenu>
+    <button
+      type="button"
+      class="sort-trigger"
+      data-sort-trigger
+      aria-haspopup="listbox"
+      aria-expanded="false"
+    >
+      <svg class="sort-ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 5v14M7 5 4 8M7 5l3 3M17 19V5M17 19l-3-3M17 19l3-3"></path>
+      </svg>
+      <span data-sort-label>최신순</span>
+      <span class="sort-caret" aria-hidden="true">▾</span>
+    </button>
+    <div class="sort-list" data-sort-list role="listbox" hidden>
+      <button type="button" data-sort="newest" class="active" role="option">최신순</button>
+      <button type="button" data-sort="oldest" role="option">오래된순</button>
+    </div>
+  </div>
+</div>

@@ -11,7 +11,7 @@ const num = String(index).padStart(3, "0");
 const tagStr = tags.map((t: string) => `#${t}`).join(" ");
 ---
 
-<a href={`/posts/${postSlug(post)}`} class="entry" style={`animation-delay:${index * 0.07}s`}>
+<a href={`/posts/${postSlug(post)}`} class="entry" data-date={pubDate.valueOf()} style={`animation-delay:${index * 0.07}s`}>
   <div class="e-num">{num}</div>
   <div>
     <span class="e-cat">{category}</span>

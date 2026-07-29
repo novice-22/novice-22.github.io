@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import SortBar from "../../components/SortBar.astro";
 import { getCollection } from "astro:content";
 import { formatDate, newsSlugs } from "../../utils";
 
@@ -18,11 +19,12 @@ const pad = (n: number) => String(n).padStart(2, "0");
   </div>
   <div class="rule"></div>
 
+  {items.length > 1 && <SortBar />}
   {
     items.length > 0 ? (
       <div class="feed">
         {items.map((item, i) => (
-          <a href={`/news/${slugs.get(item.id)}`} class="entry" style={`animation-delay:${(i + 1) * 0.07}s`}>
+          <a href={`/news/${slugs.get(item.id)}`} class="entry" data-date={new Date(item.data.date).valueOf()} style={`animation-delay:${(i + 1) * 0.07}s`}>
             <div class="e-num">{pad(i + 1)}</div>
             <div>
               {item.data.categories.length > 0 && (

@@ -413,6 +413,39 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
   .stats { grid-template-columns: 1fr; }
 }
 
+/* ── 정렬 드롭다운 ────────────────────────────────────────── */
+.sortbar { display: flex; justify-content: flex-end; margin: 14px 0 2px; }
+.sortmenu { position: relative; font-family: var(--mono); font-size: 12px; }
+.sort-trigger {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: 8px; padding: 6px 11px;
+  cursor: pointer; font-family: inherit; font-size: inherit;
+  transition: border-color 0.16s ease, color 0.16s ease;
+}
+.sort-trigger:hover { border-color: var(--accent-dim); color: var(--text); }
+.sort-ico { color: var(--text-faint); flex-shrink: 0; }
+.sort-trigger:hover .sort-ico { color: var(--accent); }
+.sort-caret { color: var(--text-faint); font-size: 9px; transition: transform 0.18s ease; }
+.sort-trigger[aria-expanded="true"] .sort-caret { transform: rotate(180deg); }
+.sort-list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 20;
+  min-width: 128px; padding: 5px;
+  background: var(--bg-soft); border: 1px solid var(--border);
+  border-radius: 10px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  display: flex; flex-direction: column; gap: 2px;
+}
+/* hidden 속성이 켜지면 확실히 숨김 (display:flex 가 [hidden] 을 덮지 않도록) */
+.sort-list[hidden] { display: none; }
+.sort-list button {
+  text-align: left; background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: 12px; color: var(--text-dim);
+  padding: 7px 10px; border-radius: 6px;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+.sort-list button:hover { background: var(--surface-hover); color: var(--text); }
+.sort-list button.active { color: var(--accent); }
+
 /* ── feed / post cards ────────────────────────────────────── */
 .feed { display: flex; flex-direction: column; }
 .entry {
