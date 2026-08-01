@@ -55,7 +55,7 @@ export const VISITOR_API = "https://visitor-counter.gmemod6602.workers.dev";
 export const SOCIAL = [
   { label: "GITHUB", href: "https://github.com/novice-22" },
   { label: "CTF팀", href: "https://ctftime.org/team/443097" },
-  { label: "NOTION", href: "https://notion.novice-22.com" },
+  { label: "Quble", href: "https://securityquble.github.io/" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
   { label: "VOCA", href: "https://voca.novice-22.com" },
   { label: "RSS", href: "/rss.xml" },
@@ -102,7 +102,7 @@ export const ABOUT = {
     {
       label: "Research Team",
       items: [
-        { when: "2026.07 ~ 현재", name: "Quble", desc: "" },
+        { when: "2026.07 ~ 현재", name: "Quble", desc: "", href: "https://securityquble.github.io/" },
       ],
     },
     {
@@ -124,6 +124,11 @@ export const ABOUT = {
           when: "2026.06~07",
           name: "1-day 취약점 분석 프로젝트",
           desc: "KISA 정보보안 프로젝트 멘토링 · Team Lead",
+        },
+        {
+          when: "2026.07~10",
+          name: "KISA 정보보안 취업스터디",
+          desc: "Team Lead",
         },
       ],
     },
