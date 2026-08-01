@@ -23,8 +23,34 @@ function dateSlug(date: Date | string): string {
 }
 
 // 글 URL 슬러그 — 노션 "슬러그" 속성이 있으면 그걸, 없으면 페이지 id로 폴백
-export function postSlug(post: { id: string; data: { slug?: string } }): string {
-  return post.data.slug || post.id;
+// 제목 → URL 슬러그. 소문자화, 영숫자와 점(.)은 유지, 나머지는 하이픈으로.
+//   점을 살려 파일·패키지명(neo.mjs 등)이 쪼개지지 않게 함.
+//   예) "CVE-2026-1111 : neo.mjs" → "cve-2026-1111-neo.mjs"
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/[^a-z0-9.]+/g, "-") // 영숫자·점 외에는 하이픈
+    .replace(/^[-.]+|[-.]+$/g, ""); // 앞뒤의 하이픈·점 제거
+}
+
+// 글 URL 슬러그. 우선순위:
+//   1) 슬러그를 직접 입력 → 그걸 사용 (링크 고정이 필요한 글: CVE 참조 등)
+//   2) "취약점 제보" 카테고리 → 제목으로 자동 생성 (제목이 영문·숫자 형태 전제)
+//   3) 그 외 → 노션 페이지 id 폴백 (한글 제목 등 slugify 부적합한 경우 대비)
+export function postSlug(post: {
+  id: string;
+  data: { slug?: string; category?: string; title?: string };
+}): string {
+  // 직접 입력한 슬러그도 slugify로 정리(대문자→소문자 등) → URL 통일
+  if (post.data.slug) {
+    const manual = slugify(post.data.slug);
+    if (manual) return manual;
+  }
+  if (post.data.category === "취약점 제보" && post.data.title) {
+    const auto = slugify(post.data.title);
+    if (auto) return auto;
+  }
+  return post.id;
 }
 
 // 뉴스 URL 슬러그 — 슬러그 있으면 그걸, 없으면 날짜 기반(2026-07-19).
