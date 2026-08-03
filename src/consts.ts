@@ -25,9 +25,9 @@ export const AFFILIATIONS = [
 
 // 사이드바 메뉴
 export const NAV = [
-  { label: "홈", href: "/" },
-  { label: "보안뉴스 스크랩", href: "/news" },
   { label: "소개", href: "/about" },
+  { label: "보안뉴스 스크랩", href: "/news" },
+  { label: "홈", href: "/" },
 ];
 
 // 카테고리 — slug(URL용)와 name(표시용)을 분리.
