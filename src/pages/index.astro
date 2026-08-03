@@ -55,6 +55,7 @@ const links = SOCIAL.filter((s) => s.label !== "RSS");
       ))
     }
     <div class="hero-links">
+      <a href="/about" class="hero-link">소개 <span class="arr">→</span></a>
       {
         links.map((s) => (
           <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" class="hero-link">
@@ -62,7 +63,6 @@ const links = SOCIAL.filter((s) => s.label !== "RSS");
           </a>
         ))
       }
-      <a href="/about" class="hero-link">소개 <span class="arr">→</span></a>
     </div>
   </section>
 
