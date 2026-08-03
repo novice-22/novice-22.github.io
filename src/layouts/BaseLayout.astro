@@ -301,8 +301,12 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
         var toc = document.querySelector(".toc");
         if (!toc) return;
         var links = Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]'));
+        // 목차에 h1~h6 를 모두 넣으므로 감시 대상도 전부여야 한다.
+        // (h2/h3 만 보면 번호 섹션이 h1 인 글에서 활성 표시가 안 따라감)
         var heads = Array.prototype.slice.call(
-          document.querySelectorAll(".prose h2[id], .prose h3[id]")
+          document.querySelectorAll(
+            ".prose h1[id], .prose h2[id], .prose h3[id], .prose h4[id], .prose h5[id], .prose h6[id]"
+          )
         );
         if (!links.length || !heads.length) return;
 
