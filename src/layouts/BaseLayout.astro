@@ -139,6 +139,17 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
           if (e.key === "Escape") closeSort();
         });
 
+        // 목차 접기/펴기 (화살표 클릭). 스크롤로 섹션이 바뀌면 자동 펼침이 다시 덮어씀.
+        document.addEventListener("click", function (e) {
+          var btn = e.target.closest && e.target.closest(".toc-toggle");
+          if (!btn) return;
+          var g = btn.closest(".toc-group");
+          if (!g) return;
+          var open = g.getAttribute("data-open") === "true";
+          g.setAttribute("data-open", open ? "false" : "true");
+          btn.setAttribute("aria-expanded", open ? "false" : "true");
+        });
+
         // 카테고리 하위 분야 아코디언 (화살표 클릭 = 펼침/접힘, 이름 클릭 = 전체글 이동)
         document.addEventListener("click", function (e) {
           var btn = e.target.closest && e.target.closest(".cat-toggle");
@@ -280,10 +291,70 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
           .catch(function () {});
       }
 
+      // 목차 스크롤스파이 — "화면 상단 기준선(110px)을 마지막으로 지난 헤딩"을 현재 섹션으로 본다.
+      // 위치 계산 방식이라 목차를 클릭해 점프했을 때도 그 항목이 정확히 활성화된다.
+      // (IntersectionObserver 감시 구간 방식은 점프한 헤딩이 구간 위로 올라가 활성화가 안 됐음)
+      // 페이지 전환마다 이전 리스너를 떼어 누수를 막는다.
+      var __tocCleanup = null;
+      function initToc() {
+        if (__tocCleanup) { __tocCleanup(); __tocCleanup = null; }
+        var toc = document.querySelector(".toc");
+        if (!toc) return;
+        var links = Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]'));
+        var heads = Array.prototype.slice.call(
+          document.querySelectorAll(".prose h2[id], .prose h3[id]")
+        );
+        if (!links.length || !heads.length) return;
+
+        var byId = {};
+        links.forEach(function (a) {
+          byId[decodeURIComponent(a.getAttribute("href").slice(1))] = a;
+        });
+
+        var LINE = 110;
+        var active = null;
+        var update = function () {
+          var cur = heads[0];
+          for (var i = 0; i < heads.length; i++) {
+            if (heads[i].getBoundingClientRect().top <= LINE) cur = heads[i];
+            else break;
+          }
+          var a = byId[cur.id] || null;
+          if (a === active) return;
+          if (active) active.classList.remove("active");
+          if (a) a.classList.add("active");
+          active = a;
+
+          // 현재 섹션만 펼치고 나머지는 접어서 목차 높이를 최소로 유지
+          var here = a ? a.closest(".toc-group") : null;
+          toc.querySelectorAll(".toc-group").forEach(function (g) {
+            var open = g === here;
+            g.setAttribute("data-open", open ? "true" : "false");
+            var t = g.querySelector(".toc-toggle");
+            if (t) t.setAttribute("aria-expanded", open ? "true" : "false");
+          });
+        };
+
+        var ticking = false;
+        var onScroll = function () {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(function () { ticking = false; update(); });
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll, { passive: true });
+        update();
+        __tocCleanup = function () {
+          window.removeEventListener("scroll", onScroll);
+          window.removeEventListener("resize", onScroll);
+        };
+      }
+
       function perPage() {
         syncTheme();
         applySort();
         initVisitors();
+        initToc();
         // 사이드바가 유지되므로 현재 경로 기준으로 메뉴 active 갱신
         var path = location.pathname.replace(/\/$/, "") || "/";
         document.querySelectorAll(".nav-block a").forEach(function (a) {

@@ -8,6 +8,127 @@ import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
+// 노션 코드블록 문법 강조 — 로더는 <pre><code class="language-x"> 만 내보내고
+// Astro 의 Shiki 파이프라인을 타지 않아 색이 안 입혀진다. 여기서 직접 Shiki(one-dark-pro)를
+// 돌려 사이트의 다른 코드블록과 동일하게 맞춘다. (shiki 는 Astro 의존성이라 추가 설치 없음)
+const SHIKI_LANGS = [
+  "typescript", "javascript", "tsx", "jsx", "json", "bash", "shell", "python",
+  "go", "rust", "c", "cpp", "java", "php", "ruby", "sql", "yaml", "toml",
+  "html", "css", "xml", "diff", "powershell", "ini", "markdown", "docker",
+];
+let hlPromise: Promise<any> | null = null;
+function getHighlighter() {
+  if (!hlPromise) {
+    hlPromise = import("shiki").then((s) =>
+      s.createHighlighter({ themes: ["one-dark-pro"], langs: SHIKI_LANGS })
+    );
+  }
+  return hlPromise;
+}
+function rehypeShikiCode() {
+  return async (tree: any) => {
+    const targets: { node: any; parent: any; index: number }[] = [];
+    const walk = (node: any, parent: any = null, index = 0) => {
+      if (
+        node?.tagName === "pre" &&
+        node.children?.length === 1 &&
+        node.children[0]?.tagName === "code"
+      ) {
+        targets.push({ node, parent, index });
+        return; // pre 안쪽은 더 안 봐도 됨
+      }
+      node?.children?.forEach((c: any, i: number) => walk(c, node, i));
+    };
+    walk(tree);
+    if (!targets.length) return;
+
+    const hl = await getHighlighter();
+    const loaded = new Set(hl.getLoadedLanguages());
+    const textOf = (n: any): string =>
+      n.type === "text" ? n.value : (n.children ?? []).map(textOf).join("");
+
+    for (const { node, parent, index } of targets) {
+      if (!parent) continue;
+      const code = node.children[0];
+      const cls: string[] = (code.properties?.className ?? []) as string[];
+      // "language-typescript" → typescript. "plain text" 처럼 미지원이면 텍스트로.
+      const raw = (cls.find((c) => c.startsWith("language-")) ?? "").replace("language-", "");
+      const lang = loaded.has(raw) ? raw : "text";
+      try {
+        const hast = hl.codeToHast(textOf(code).replace(/\n$/, ""), {
+          lang,
+          theme: "one-dark-pro",
+        });
+        const pre = hast.children?.find((c: any) => c.tagName === "pre");
+        if (pre) parent.children[index] = pre;
+      } catch {
+        // 강조 실패 시 원본 <pre> 유지 (빌드는 계속)
+      }
+    }
+  };
+}
+
+// 본문에 직접 쓴 "목차" 목록을 실제 헤딩 링크로 바꿔준다.
+// (노션에서 번호 목록으로 적은 목차는 그냥 텍스트라 클릭이 안 됨 → 글 내용은 그대로 두고 <a> 만 입힘)
+// "목차" 가 들어간 헤딩 바로 다음 목록에만 적용해서, 본문의 다른 목록은 건드리지 않는다.
+function rehypeLinkManualToc() {
+  // 비교용 정규화: 이모지·기호 제거, 앞 번호("1." "2)") 제거, 공백 정리
+  const norm = (s: string) =>
+    s
+      .replace(/[\p{Extended_Pictographic}️]/gu, "")
+      .replace(/^\s*\d+\s*[.)]\s*/, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
+
+  return (tree: any) => {
+    const textOf = (n: any): string =>
+      n.type === "text" ? n.value : (n.children ?? []).map(textOf).join("");
+
+    // 1) 헤딩 수집 (id 있는 것만)
+    const heads: { id: string; key: string }[] = [];
+    const collect = (n: any) => {
+      if (/^h[1-6]$/.test(n?.tagName ?? "") && n.properties?.id) {
+        heads.push({ id: String(n.properties.id), key: norm(textOf(n)) });
+      }
+      n?.children?.forEach(collect);
+    };
+    collect(tree);
+    if (!heads.length) return;
+
+    // 2) "목차" 헤딩 바로 뒤의 목록 찾기
+    const linkList = (list: any) => {
+      for (const li of list.children ?? []) {
+        if (li.tagName !== "li") continue;
+        // 이미 링크가 있으면 통과
+        if ((li.children ?? []).some((c: any) => c.tagName === "a")) continue;
+        const hit = heads.find((h) => h.key && h.key === norm(textOf(li)));
+        if (!hit) continue;
+        li.children = [
+          {
+            type: "element",
+            tagName: "a",
+            properties: { href: `#${hit.id}`, className: ["toc-jump"] },
+            children: li.children,
+          },
+        ];
+      }
+    };
+
+    const scan = (parent: any) => {
+      const kids = parent?.children ?? [];
+      kids.forEach((n: any, i: number) => {
+        if (/^h[1-6]$/.test(n?.tagName ?? "") && /목차/.test(textOf(n))) {
+          const next = kids.slice(i + 1).find((c: any) => c.type === "element");
+          if (next && (next.tagName === "ol" || next.tagName === "ul")) linkList(next);
+        }
+        scan(n);
+      });
+    };
+    scan(tree);
+  };
+}
+
 // 블로그 글 이미지: 노션 임시 URL을 빌드 때 내려받아 정적 파일(public/notion-img)로
 // 저장하고 경로를 바꿔치기 → 정적 호스팅에서도 깨지지 않게.
 const IMG_DIR = "public/notion-img";
@@ -69,7 +190,7 @@ const posts = defineCollection({
     database_id: import.meta.env.NOTION_DATABASE_ID,
     // 발행 체크된 글만
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -78,7 +199,7 @@ const posts = defineCollection({
       카테고리: t.select.optional(),
       분야: t.select.optional(), // 취약점 분석 글의 하위 분야 (웹/IoT·펌웨어/AI·MCP)
       태그: t.multi_select.optional(),
-      요약: t.rich_text.optional(),
+      "제보 제목": t.rich_text.optional(), // 목록 카드·메타 설명에 쓰는 한 줄 (GHSA 등 원문 제목)
       발행일: t.date.optional(),
     }),
   }).transform((page) => ({
@@ -87,7 +208,7 @@ const posts = defineCollection({
     category: page.properties.카테고리 ?? "취약점 분석",
     field: page.properties.분야 ?? null, // 취약점 분석만 사용, 나머지는 null
     tags: page.properties.태그 ?? [],
-    summary: page.properties.요약 ?? "",
+    summary: page.properties["제보 제목"] ?? "",
     pubDate: page.properties.발행일?.start ?? new Date(),
     draft: false, // 로더에서 이미 "발행" 필터링됨
   })),
