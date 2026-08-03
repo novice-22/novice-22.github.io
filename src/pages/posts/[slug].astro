@@ -12,10 +12,31 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content, headings } = await render(post);
+const { Content } = await render(post);
 const { title, category, tags, pubDate, summary } = post.data;
-// 노션 헤딩은 depth가 중첩 단계(1=상위, 2=하위)로 온다
-const toc = headings.filter((h) => h.depth <= 2);
+
+// 목차 — 노션 로더가 주는 headings 는 depth 가 전부 1 로 와서 계층이 없다.
+// 렌더된 HTML 에서 헤딩(h1~h6)을 직접 뽑고, "실제로 쓰인 레벨"을 기준으로 단계를 매긴다.
+// 글마다 제목1부터 쓰든 제목2부터 쓰든 항상 첫 단계가 최상위가 되도록 정규화 (최대 3단계).
+const html: string = (post as any).rendered?.html ?? "";
+const found = [
+  ...html.matchAll(/<(h[1-6])\s+id="([^"]+)"[^>]*>([\s\S]*?)<\/\1>/g),
+].map((m) => ({
+  level: Number(m[1][1]),
+  slug: m[2],
+  text: m[3].replace(/<[^>]*>/g, "").trim(),
+}));
+const levels = [...new Set(found.map((h) => h.level))].sort((a, b) => a - b);
+const rank = new Map(levels.map((l, i) => [l, Math.min(i + 1, 3)]));
+const toc = found.map((h) => ({ ...h, depth: rank.get(h.level) ?? 1 }));
+
+// 최상위 항목 아래로 하위 항목을 묶는다 → 목차에서 접었다 펼 수 있게(높이 절약).
+type TocNode = { slug: string; text: string; depth: number };
+const tocGroups: { head: TocNode; children: TocNode[] }[] = [];
+for (const h of toc) {
+  if (h.depth === 1 || tocGroups.length === 0) tocGroups.push({ head: h, children: [] });
+  else tocGroups[tocGroups.length - 1].children.push(h);
+}
 ---
 
 <BaseLayout title={title} description={summary}>
@@ -42,15 +63,33 @@ const toc = headings.filter((h) => h.depth <= 2);
 
     {
       toc.length > 0 && (
-        <nav class="toc">
-          <span class="nav-label">목차</span>
-          <ul>
-            {toc.map((h) => (
-              <li class={h.depth >= 2 ? "lv3" : ""}>
-                <a href={`#${h.slug}`}>{h.text}</a>
-              </li>
-            ))}
-          </ul>
+        <nav class="toc" aria-label="목차">
+          <div class="toc-inner">
+            <span class="nav-label">목차</span>
+            <ul>
+              {tocGroups.map((g) => (
+                <li class="toc-group" data-open="false">
+                  <div class="toc-row">
+                    {g.children.length > 0 && (
+                      <button class="toc-toggle" aria-expanded="false" aria-label="하위 항목 펼치기">
+                        <span class="tri">›</span>
+                      </button>
+                    )}
+                    <a href={`#${g.head.slug}`} title={g.head.text}>{g.head.text}</a>
+                  </div>
+                  {g.children.length > 0 && (
+                    <ul class="toc-children">
+                      {g.children.map((c) => (
+                        <li class={`lv${c.depth}`}>
+                          <a href={`#${c.slug}`} title={c.text}>{c.text}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </nav>
       )
     }
