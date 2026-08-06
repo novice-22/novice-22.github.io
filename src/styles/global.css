@@ -174,7 +174,8 @@ a { color: inherit; }
   font-family: var(--mono); font-size: 10.5px; letter-spacing: 2.5px;
   text-transform: uppercase; color: var(--text-faint); margin-top: 14px;
 }
-.nav-block { margin-top: 40px; }
+/* 사이드바 순서: 검색 → categories → menu → links */
+.nav-block { margin-top: 34px; }
 .nav-label {
   font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
   text-transform: uppercase; color: var(--text-faint);
@@ -192,7 +193,7 @@ a { color: inherit; }
 .nav-block a.active { color: var(--accent); }
 .nav-block a.active::before { color: var(--accent); }
 
-.cat-list { margin-top: 34px; }
+.cat-list { margin-top: 40px; }
 .cat-list a {
   display: flex; justify-content: space-between; align-items: center;
   font-size: 13px; color: var(--text-dim); text-decoration: none;

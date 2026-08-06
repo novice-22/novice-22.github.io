@@ -56,6 +56,7 @@ export const SOCIAL = [
   { label: "GITHUB", href: "https://github.com/novice-22" },
   { label: "CTF팀", href: "https://ctftime.org/team/443097" },
   { label: "Quble", href: "https://securityquble.github.io/" },
+  { label: "vuln", href: "https://vuln.novice-22.com" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
   { label: "VOCA", href: "https://voca.novice-22.com" },
   { label: "RSS", href: "/rss.xml" },
@@ -89,8 +90,8 @@ export const ABOUT = {
     {
       label: "CTF",
       items: [
-        { when: "2025.12 ~ 현재", name: "RubiyaLab", desc: "", href: "https://rubiyalab.team/" },
         { when: "2026.08 ~ 현재", name: "RubiyaLab Holiday", desc: "소그룹 · Group Lead", href: "https://ctftime.org/team/443097" },
+        { when: "2025.12 ~ 현재", name: "RubiyaLab", desc: "", href: "https://rubiyalab.team/" },
       ],
     },
     {
@@ -108,17 +109,17 @@ export const ABOUT = {
     {
       label: "교육 · 수료",
       items: [
-        { when: "2026.03~05", name: "K-Shield Jr. 16기 모의해킹 및 취약점 진단", desc: "" },
         { when: "2026.06", name: "버그헌팅 실습훈련 중급과정 [8차]", desc: "KISA 실전형 사이버훈련장 (Security-Gym)" },
+        { when: "2026.03~05", name: "K-Shield Jr. 16기 모의해킹 및 취약점 진단", desc: "" },
       ],
     },
     {
       label: "프로젝트",
       items: [
         {
-          when: "2026.03~05",
-          name: "IoT 취약점 분석 프로젝트",
-          desc: "K-Shield Jr. 16기 모의해킹 및 취약점 진단",
+          when: "2026.07~10",
+          name: "KISA 정보보안 취업스터디",
+          desc: "Team Lead",
         },
         {
           when: "2026.06~07",
@@ -126,9 +127,9 @@ export const ABOUT = {
           desc: "KISA 정보보안 프로젝트 멘토링 · Team Lead",
         },
         {
-          when: "2026.07~10",
-          name: "KISA 정보보안 취업스터디",
-          desc: "Team Lead",
+          when: "2026.03~05",
+          name: "IoT 취약점 분석 프로젝트",
+          desc: "K-Shield Jr. 16기 모의해킹 및 취약점 진단",
         },
       ],
     },
