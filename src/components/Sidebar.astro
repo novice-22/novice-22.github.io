@@ -39,17 +39,6 @@ const isActive = (href: string) =>
     <div id="site-search-results" class="sb-search-results" hidden></div>
   </div>
 
-  <nav class="nav-block">
-    <span class="nav-label">menu</span>
-    {
-      NAV.map((item) => (
-        <a href={item.href} class={isActive(item.href) ? "active" : ""}>
-          {item.label}
-        </a>
-      ))
-    }
-  </nav>
-
   <div class="cat-list">
     <span class="nav-label">categories</span>
     {
@@ -79,6 +68,17 @@ const isActive = (href: string) =>
       )
     }
   </div>
+
+  <nav class="nav-block">
+    <span class="nav-label">menu</span>
+    {
+      NAV.map((item) => (
+        <a href={item.href} class={isActive(item.href) ? "active" : ""}>
+          {item.label}
+        </a>
+      ))
+    }
+  </nav>
 
   <div class="social">
     <button class="links-toggle" aria-expanded="false" aria-controls="social-links">
