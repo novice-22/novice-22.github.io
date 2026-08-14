@@ -155,9 +155,11 @@ export const ABOUT = {
         { when: "mssql-mcp-core", name: "CVE-2026-63129", desc: "", href: "https://github.com/ConnorBritain/mssql-mcp-core/security/advisories/GHSA-2m9m-6cr5-9x25" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-76pm-mq2q-9gcr" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
-        { when: "nginx-ui", name: "CVE 발급 대기", desc: "" },
+        { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-662p-52hx-cmh2" },
         { when: "fast-agent", name: "CVE 발급 대기", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
         { when: "neo", name: "CVE 발급 대기", desc: "" },
+        { when: "kubeshark", name: "CVE 발급 대기", desc: "", href: "https://github.com/kubeshark/kubeshark/security/advisories/GHSA-8vf2-hxg5-crqh" },
+        { when: "kubeshark", name: "CVE 발급 대기", desc: "", href: "https://github.com/kubeshark/kubeshark/security/advisories/GHSA-gj7r-p794-hhq5" },
       ],
     },
     // 버그바운티 — 플랫폼별로 항목이 쌓임.
