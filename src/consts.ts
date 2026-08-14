@@ -18,9 +18,6 @@ export const AFFILIATIONS = [
     { label: "CTF Team", name: "RubiyaLab" },
     { label: "CTF 소그룹", name: "RubiyaLab Holiday", role: "Group Lead" },
   ],
-  [
-    { label: "Research Team", name: "Quble" },
-  ],
 ];
 
 // 사이드바 메뉴
@@ -55,7 +52,6 @@ export const VISITOR_API = "https://visitor-counter.gmemod6602.workers.dev";
 export const SOCIAL = [
   { label: "GITHUB", href: "https://github.com/novice-22" },
   { label: "CTF팀", href: "https://ctftime.org/team/443097" },
-  { label: "Quble", href: "https://securityquble.github.io/" },
   { label: "vuln", href: "https://vuln.novice-22.com" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
   { label: "VOCA", href: "https://voca.novice-22.com" },
@@ -98,12 +94,6 @@ export const ABOUT = {
       label: "Wargame",
       items: [
         { when: "webhacking.kr", name: "novice-22 · 랭킹 12위 (6695점, all clear)", desc: "", href: "https://webhacking.kr" },
-      ],
-    },
-    {
-      label: "Research Team",
-      items: [
-        { when: "2026.07 ~ 현재", name: "Quble", desc: "", href: "https://securityquble.github.io/" },
       ],
     },
     {
