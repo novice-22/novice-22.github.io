@@ -147,6 +147,7 @@ export const ABOUT = {
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-662p-52hx-cmh2" },
         { when: "fast-agent", name: "CVE 발급 대기", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
+        // 엠바고: 2026-08-20 12:00 UTC 이전 공개 금지 (CERT/CC 조율) → 공개일까지 번호 비노출
         { when: "neo", name: "CVE 발급 대기", desc: "" },
         { when: "kubeshark", name: "CVE 발급 대기", desc: "", href: "https://github.com/kubeshark/kubeshark/security/advisories/GHSA-8vf2-hxg5-crqh" },
         { when: "kubeshark", name: "CVE 발급 대기", desc: "", href: "https://github.com/kubeshark/kubeshark/security/advisories/GHSA-gj7r-p794-hhq5" },
