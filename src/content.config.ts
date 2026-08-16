@@ -68,6 +68,24 @@ function rehypeShikiCode() {
   };
 }
 
+// 본문(노션)에서 온 외부 링크는 새 탭으로 열리게 한다.
+// 내부 링크(/posts/... , #앵커)는 같은 탭 유지 — 사이트 안 이동까지 새 탭이면 불편하다.
+function rehypeExternalLinks() {
+  return (tree: any) => {
+    const walk = (n: any) => {
+      if (n?.tagName === "a") {
+        const href = n.properties?.href;
+        if (typeof href === "string" && /^https?:\/\//i.test(href)) {
+          n.properties.target = "_blank";
+          n.properties.rel = "noopener noreferrer";
+        }
+      }
+      n?.children?.forEach(walk);
+    };
+    walk(tree);
+  };
+}
+
 // 본문에 직접 쓴 "목차" 목록을 실제 헤딩 링크로 바꿔준다.
 // (노션에서 번호 목록으로 적은 목차는 그냥 텍스트라 클릭이 안 됨 → 글 내용은 그대로 두고 <a> 만 입힘)
 // "목차" 가 들어간 헤딩 바로 다음 목록에만 적용해서, 본문의 다른 목록은 건드리지 않는다.
@@ -190,7 +208,7 @@ const posts = defineCollection({
     database_id: import.meta.env.NOTION_DATABASE_ID,
     // 발행 체크된 글만
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeExternalLinks],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -235,7 +253,7 @@ const news = defineCollection({
     auth: import.meta.env.NOTION_TOKEN,
     database_id: "1f56ae44781344a7a1f317f86526bcc8",
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeStripImages],
+    rehypePlugins: [rehypeStripImages, rehypeExternalLinks],
   }),
   schema: notionPageSchema({
     properties: z.object({
