@@ -76,6 +76,14 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
     <script>
       // View Transitions 대응: 지속 요소(사이드바·토글)엔 한 번만 바인딩,
       // 페이지마다 바뀌는 것(본문 복사버튼·메뉴 active)은 astro:page-load 에서 갱신.
+      // 라이트박스 닫기 (ESC·바깥클릭·페이지 전환에서 공용으로 씀)
+      function closeLightbox() {
+        if (!window.__lb) return;
+        window.__lb.remove();
+        window.__lb = null;
+        document.documentElement.style.overflow = "";
+      }
+
       function syncTheme() {
         var t = document.documentElement.getAttribute("data-theme");
         document.querySelectorAll(".theme-toggle").forEach(function (b) {
@@ -136,7 +144,32 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
           if (!e.target.closest || !e.target.closest("[data-sortmenu]")) closeSort();
         });
         document.addEventListener("keydown", function (e) {
-          if (e.key === "Escape") closeSort();
+          if (e.key !== "Escape") return;
+          closeSort();
+          closeLightbox();
+        });
+
+        // 본문 이미지 클릭 확대 (라이트박스). 720px 본문 폭에 눌린 스크린샷을 원본으로 보기 위함.
+        // 오버레이는 열 때 만들고 닫을 때 제거 → View Transitions 로 페이지가 바뀌어도 남지 않음.
+        document.addEventListener("click", function (e) {
+          var img = e.target.closest && e.target.closest(".prose img");
+          if (!img) return;
+          closeLightbox();
+          var ov = document.createElement("div");
+          ov.className = "lightbox";
+          var btn = document.createElement("button");
+          btn.className = "lb-close";
+          btn.setAttribute("aria-label", "닫기");
+          btn.textContent = "✕";
+          var big = document.createElement("img");
+          big.src = img.getAttribute("src");
+          big.alt = img.getAttribute("alt") || "";
+          ov.appendChild(btn);
+          ov.appendChild(big);
+          ov.addEventListener("click", closeLightbox);
+          document.body.appendChild(ov);
+          document.documentElement.style.overflow = "hidden"; // 뒤 배경 스크롤 잠금
+          window.__lb = ov;
         });
 
         // 목차 접기/펴기 (화살표 클릭). 스크롤로 섹션이 바뀌면 자동 펼침이 다시 덮어씀.
@@ -397,6 +430,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
       // 전환 시 사이드바 내부 스크롤 위치 보존 (persist 요소는 DOM 이동 때 scrollTop 이 초기화됨)
       var __sbScroll = 0;
       document.addEventListener("astro:before-swap", function () {
+        closeLightbox(); // 전환 중 오버레이가 남지 않게
         var sb = document.querySelector(".sidebar-body");
         if (sb) __sbScroll = sb.scrollTop;
       });
