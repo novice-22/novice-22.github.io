@@ -1,8 +1,9 @@
 ---
 import { getCollection } from "astro:content";
 import { SITE, NAV, CATEGORIES, SOCIAL } from "../consts";
+import { getAllPosts } from "../utils";
 
-const posts = await getCollection("posts", ({ data }) => !data.draft);
+const posts = await getAllPosts();
 const counts: Record<string, number> = {};
 for (const c of CATEGORIES) {
   counts[c.slug] = posts.filter((p) => p.data.category === c.name).length;

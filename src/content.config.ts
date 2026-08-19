@@ -68,6 +68,73 @@ function rehypeShikiCode() {
   };
 }
 
+// 노션 표 셀에는 정렬용 nbsp(U+00A0)가 잔뜩 붙어 온다. 일반 공백과 달리 접히지 않아
+// 칸을 밀어내고 단어를 쪼개므로, 표 셀 앞뒤의 nbsp 를 정리한다.
+function rehypeTrimTableCells() {
+  return (tree: any) => {
+    const clean = (n: any) => {
+      if (n?.type === "text") {
+        n.value = n.value.replace(/ /g, " ");
+      }
+      n?.children?.forEach(clean);
+    };
+    const trimEdges = (cell: any) => {
+      const kids = cell.children ?? [];
+      const first = kids.find((c: any) => c.type === "text");
+      const last = [...kids].reverse().find((c: any) => c.type === "text");
+      if (first) first.value = first.value.replace(/^s+/, "");
+      if (last) last.value = last.value.replace(/s+$/, "");
+    };
+    const walk = (n: any) => {
+      if (n?.tagName === "th" || n?.tagName === "td") {
+        clean(n);
+        trimEdges(n);
+        return;
+      }
+      n?.children?.forEach(walk);
+    };
+    walk(tree);
+  };
+}
+
+// 노션의 셀 병합(colspan)은 로더가 버려서, 병합된 머리글이
+// "내용 있는 칸 + 뒤따르는 빈 칸들"로 넘어온다. 표의 첫 행에 한해
+// 뒤쪽 빈 칸을 마지막 내용 칸에 colspan 으로 되돌려준다.
+// (첫 행만 손대므로 본문 행의 '값이 비어 있는 칸'은 건드리지 않는다)
+function rehypeMergeTableHeader() {
+  return (tree: any) => {
+    const textOf = (n: any): string =>
+      n.type === "text" ? n.value : (n.children ?? []).map(textOf).join("");
+    const walk = (n: any) => {
+      if (n?.tagName === "table") {
+        const rows: any[] = [];
+        const collectRows = (x: any) => {
+          if (x?.tagName === "tr") rows.push(x);
+          else x?.children?.forEach(collectRows);
+        };
+        collectRows(n);
+        const first = rows[0];
+        if (first) {
+          const cells = (first.children ?? []).filter(
+            (c: any) => c.tagName === "th" || c.tagName === "td"
+          );
+          let last = cells.length - 1;
+          while (last > 0 && textOf(cells[last]).trim() === "") last--;
+          const empties = cells.length - 1 - last;
+          if (empties >= 1 && textOf(cells[last]).trim() !== "") {
+            cells[last].properties = cells[last].properties ?? {};
+            cells[last].properties.colSpan = empties + 1;
+            const drop = new Set(cells.slice(last + 1));
+            first.children = (first.children ?? []).filter((c: any) => !drop.has(c));
+          }
+        }
+      }
+      n?.children?.forEach(walk);
+    };
+    walk(tree);
+  };
+}
+
 // 본문(노션)에서 온 외부 링크는 새 탭으로 열리게 한다.
 // 내부 링크(/posts/... , #앵커)는 같은 탭 유지 — 사이트 안 이동까지 새 탭이면 불편하다.
 function rehypeExternalLinks() {
@@ -208,7 +275,7 @@ const posts = defineCollection({
     database_id: import.meta.env.NOTION_DATABASE_ID,
     // 발행 체크된 글만
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeExternalLinks],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -229,6 +296,44 @@ const posts = defineCollection({
     summary: page.properties["제보 제목"] ?? "",
     pubDate: page.properties.발행일?.start ?? new Date(),
     draft: false, // 로더에서 이미 "발행" 필터링됨
+  })),
+});
+
+// ── 주요통신기반시설(주통기) 점검 항목 ────────────────────────
+// 노션의 별도 DB("주통기 웹 애플리케이션 21항목")를 그대로 읽어온다.
+// 출력 모양을 posts 와 똑같이 맞춰서, 기존 카드·글 페이지·검색이 그대로 동작하게 함.
+//   슬러그: 코드(SI, SF …)가 항목마다 고유하므로 cii-<코드> 로 URL 고정
+//   요약:   점검 경로를 목록 카드 한 줄 설명으로 사용
+const cii = defineCollection({
+  loader: notionLoader({
+    auth: import.meta.env.NOTION_TOKEN,
+    database_id: "3bff35df-dcf4-80d4-8f89-dbab7f0ceaba",
+    // 내용을 다 쓴 항목만 공개 (빈 템플릿이 올라가지 않게)
+    filter: { property: "발행", checkbox: { equals: true } },
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+  }),
+  schema: notionPageSchema({
+    properties: z.object({
+      이름: t.title,
+      코드: t.select.optional(),
+      내부코드: t.multi_select.optional(),
+      "점검 경로": t.rich_text.optional(),
+      중요도: t.select.optional(),
+      판정: t.select.optional(),
+      발행일: t.date.optional(),
+    }),
+  }).transform((page) => ({
+    title: page.properties.이름,
+    slug: page.properties.코드 ? `cii-${page.properties.코드.toLowerCase()}` : undefined,
+    category: "주요통신기반시설",
+    field: null,
+    tags: page.properties.내부코드 ?? [],
+    summary: page.properties["점검 경로"] ?? "",
+    pubDate: page.properties.발행일?.start ?? new Date(),
+    draft: false, // 로더에서 이미 "발행" 필터링됨
+    // 주통기 전용 부가 정보 (목록·글 상단에 뱃지로 쓸 수 있음)
+    severity: page.properties.중요도 ?? null,
+    verdict: page.properties.판정 ?? null,
   })),
 });
 
@@ -253,7 +358,7 @@ const news = defineCollection({
     auth: import.meta.env.NOTION_TOKEN,
     database_id: "1f56ae44781344a7a1f317f86526bcc8",
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeStripImages, rehypeExternalLinks],
+    rehypePlugins: [rehypeStripImages, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -273,7 +378,7 @@ const news = defineCollection({
   })),
 });
 
-export const collections = { posts, news };
+export const collections = { posts, cii, news };
 
 // ── 로컬 마크다운으로 되돌리려면 ─────────────────────────────
 // 아래 블록으로 교체하면 src/content/posts/*.md 를 다시 소스로 사용.

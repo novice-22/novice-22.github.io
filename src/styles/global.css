@@ -654,6 +654,32 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 /* 노션 이미지 블록 — 가운데 정렬 + 아래 여백 확보 */
 .prose .notion-image { display: flex; justify-content: center; }
 .prose .notion-image img { display: block; height: auto; }
+/* 노션 토글 — 로더가 <details class="notion-toggle"><summary>…</summary> 로 변환.
+   기본 삼각형을 없애고 사이드바·목차와 같은 › 화살표로 통일. */
+.prose details {
+  border: 1px solid var(--border-soft); border-radius: 8px;
+  background: var(--surface); padding: 0 15px;
+}
+.prose details[open] { padding-bottom: 13px; }
+.prose summary {
+  display: flex; align-items: baseline; gap: 9px;
+  padding: 11px 0; cursor: pointer;
+  font-size: 14.5px; color: var(--text-dim);
+  list-style: none; /* Firefox 기본 마커 제거 */
+  transition: color 0.16s ease;
+}
+.prose summary::-webkit-details-marker { display: none; }
+.prose summary::before {
+  content: "›"; display: inline-block; flex-shrink: 0;
+  color: var(--accent-dim); font-family: var(--mono);
+  transition: transform 0.18s ease;
+}
+.prose details[open] > summary::before { transform: rotate(90deg); color: var(--accent); }
+.prose summary:hover { color: var(--text); }
+.prose details[open] > summary { color: var(--text); }
+/* 토글 안쪽 요소 간격 (.prose > * + * 가 안 닿는 자리) */
+.prose details > *:not(summary) { margin-top: 11px; }
+
 .prose img { cursor: zoom-in; }
 .prose hr { border: none; height: 1px; background: var(--border); }
 
@@ -682,20 +708,27 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .lb-close:hover { color: var(--accent); border-color: var(--accent-dim); }
 @media (prefers-reduced-motion: reduce) { .lightbox { animation: none; } }
 
-/* 표 (노션) — 첫 열이 th[scope=row] 구조. 넓으면 가로 스크롤 */
+/* 표 (노션) — 본문 폭 안에서 줄바꿈되게 고정 레이아웃.
+   display:block + overflow-x 를 쓰면 표가 내용만큼 늘어나 가로 스크롤이 생기므로 쓰지 않는다. */
 .prose table {
-  display: block; width: 100%; max-width: 100%; overflow-x: auto;
+  width: 100%; max-width: 100%; table-layout: fixed;
   border-collapse: collapse; font-size: 14px; line-height: 1.65;
 }
 .prose th, .prose td {
   border: 1px solid var(--border);
   padding: 9px 13px; text-align: left; vertical-align: top;
+  overflow-wrap: break-word; /* 칸을 넘칠 때만 줄바꿈 (단어 중간을 함부로 안 쪼갬) */
 }
 .prose th {
   background: var(--surface); color: var(--text);
   font-family: var(--mono); font-size: 12.5px; font-weight: 600;
-  white-space: nowrap;
 }
+/* 첫 열은 대부분 라벨(점검 목적·판단 기준 …)이라 좁게 고정.
+   table-layout:fixed 는 첫 행의 셀 너비만 보므로, th·td 가리지 않고 첫 칸에 적용해야 한다. */
+/* 2열짜리 라벨 표에서만 첫 칸을 좁게. 열이 많은 표는 균등 분배가 자연스럽다. */
+.prose tr:first-child > *:first-child:nth-last-child(2) { width: 20%; }
+/* 병합된 머리글 칸(노션 셀 병합 복원)은 가운데 정렬 */
+.prose th[colspan], .prose td[colspan] { text-align: center; width: auto; }
 .prose td { color: var(--text-dim); }
 .prose tbody tr:hover td { background: var(--surface-hover); }
 .prose :not(pre) > code {

@@ -3,9 +3,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
 import { getCollection } from "astro:content";
 import { SITE, CATEGORIES, SOCIAL, VISITOR_API, AFFILIATIONS } from "../consts";
-import { formatDate } from "../utils";
+import { formatDate, getAllPosts } from "../utils";
 
-const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+const posts = (await getAllPosts()).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 const news = (await getCollection("news")).sort(

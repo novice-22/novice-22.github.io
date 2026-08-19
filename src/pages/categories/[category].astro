@@ -4,9 +4,10 @@ import PostCard from "../../components/PostCard.astro";
 import SortBar from "../../components/SortBar.astro";
 import { getCollection } from "astro:content";
 import { CATEGORIES } from "../../consts";
+import { getAllPosts } from "../../utils";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("posts", ({ data }) => !data.draft);
+  const posts = await getAllPosts();
   return CATEGORIES.map((c) => ({
     params: { category: c.slug },
     props: {
