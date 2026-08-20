@@ -95,7 +95,7 @@ export const ABOUT = {
     {
       label: "Wargame",
       items: [
-        { when: "webhacking.kr", name: "novice-22 · 랭킹 12위 (6695점, all clear)", desc: "", href: "https://webhacking.kr" },
+        { when: "webhacking.kr", name: "novice-22 · 랭킹 3위 (6770점, all clear)", desc: "", href: "https://webhacking.kr" },
       ],
     },
     {
