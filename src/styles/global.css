@@ -641,6 +641,27 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 /* 본문 안에 직접 쓴 목차의 자동 링크 — 목록 전체가 초록으로 튀지 않게 조용히 */
 .prose a.toc-jump { color: var(--text); border-bottom: none; }
 .prose a.toc-jump:hover { color: var(--accent); border-bottom: 1px solid var(--accent-dim); }
+
+/* 노션 "링크 멘션" — 파비콘 + 제목을 감싼 인라인 칩.
+   본문 흐름을 끊지 않게 인라인으로 두고, 배경·테두리로만 존재감을 준다. */
+.prose a.link-mention {
+  display: inline-flex; align-items: center; gap: 6px;
+  vertical-align: baseline;
+  padding: 1px 8px 2px; margin: 0 1px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface);
+  color: var(--text); font-size: 0.94em; line-height: 1.5;
+  transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+.prose a.link-mention:hover {
+  border-color: var(--accent-dim); background: var(--surface-hover); color: var(--accent);
+}
+/* 파비콘은 장식 — 라이트박스·확대 대상에서 빼고 크기를 글자에 맞춘다 */
+.prose a.link-mention img {
+  width: 14px; height: 14px; flex-shrink: 0;
+  border: none; border-radius: 3px; cursor: inherit;
+  object-fit: contain;
+}
 /* 노션 볼드는 <b> 로 오므로 strong 과 같이 처리 */
 .prose strong, .prose b { color: var(--text); font-weight: 600; }
 .prose ul, .prose ol { padding-left: 24px; color: var(--text-dim); }
@@ -757,8 +778,10 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .copy-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
 .copy-btn.copied { color: var(--accent); }
 
-/* 보안뉴스 상세 — 기사 이미지(저작권·만료 URL)는 숨김 */
+/* 보안뉴스 상세 — 기사 이미지(저작권·만료 URL)는 숨김.
+   단 멘션 칩의 파비콘은 본문 이미지가 아니라 링크 장식이므로 남긴다. */
 .news-prose img { display: none; }
+.news-prose a.link-mention img { display: inline-block; }
 .source-link { margin-top: 32px; }
 
 /* 해시태그 (글·뉴스 상단) */

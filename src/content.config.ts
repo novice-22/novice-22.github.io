@@ -97,6 +97,74 @@ function rehypeTrimTableCells() {
   };
 }
 
+// 노션 "링크 멘션"은 제목·파비콘(mention.link_mention)을 들고 있는데,
+// 로더가 쓰는 plain_text 에는 URL 이 들어 있어 본문에 긴 주소가 그대로 찍힌다.
+// rehype 단계에서는 멘션 정보가 사라지므로, 원본 블록(file.data)에서
+// href → {제목, 아이콘} 지도를 만들어 노션과 같은 칩 모양으로 되돌린다.
+// 파비콘은 빌드 때 받아 /notion-img/ 로 넣는다 (사이트에서 외부 요청이 나가지 않게).
+function rehypeMentionTitles() {
+  return async (tree: any, file: any) => {
+    const mentions = new Map<string, { title: string; icon?: string }>();
+    const seen = new Set<any>();
+    const collect = (n: any, depth = 0) => {
+      if (!n || typeof n !== "object" || depth > 12 || seen.has(n)) return;
+      seen.add(n);
+      if (Array.isArray(n)) return n.forEach((c) => collect(c, depth + 1));
+      const lm = n?.mention?.link_mention;
+      if (lm?.href && lm?.title) {
+        mentions.set(String(lm.href), {
+          title: String(lm.title),
+          icon: lm.icon_url ? String(lm.icon_url) : undefined,
+        });
+      }
+      for (const v of Object.values(n)) collect(v, depth + 1);
+    };
+    collect(file?.data);
+    if (!mentions.size) return;
+
+    // 표시 텍스트가 URL 그대로인 링크만 대상 (직접 쓴 링크 텍스트는 보존)
+    const textOf = (n: any): string =>
+      n.type === "text" ? n.value : (n.children ?? []).map(textOf).join("");
+    const targets: { node: any; info: { title: string; icon?: string } }[] = [];
+    const walk = (n: any) => {
+      if (n?.tagName === "a") {
+        const href = String(n.properties?.href ?? "");
+        const info = mentions.get(href);
+        if (info && textOf(n).trim() === href) targets.push({ node: n, info });
+      }
+      n?.children?.forEach(walk);
+    };
+    walk(tree);
+    if (!targets.length) return;
+
+    // 같은 아이콘은 한 번만 받는다
+    const iconUrls = [...new Set(targets.map((t) => t.info.icon).filter(Boolean))] as string[];
+    const localIcons = new Map<string, string>();
+    await Promise.all(
+      iconUrls.map(async (url) => {
+        const local = await saveRemoteImage(url);
+        if (local) localIcons.set(url, local);
+      })
+    );
+
+    for (const { node, info } of targets) {
+      const icon = info.icon ? localIcons.get(info.icon) : undefined;
+      const kids: any[] = [];
+      if (icon) {
+        kids.push({
+          type: "element",
+          tagName: "img",
+          properties: { src: icon, alt: "", loading: "lazy", "aria-hidden": "true" },
+          children: [],
+        });
+      }
+      kids.push({ type: "text", value: info.title });
+      node.children = kids;
+      node.properties = { ...node.properties, className: ["link-mention"] };
+    }
+  };
+}
+
 // 노션의 셀 병합(colspan)은 로더가 버려서, 병합된 머리글이
 // "내용 있는 칸 + 뒤따르는 빈 칸들"로 넘어온다. 표의 첫 행에 한해
 // 뒤쪽 빈 칸을 마지막 내용 칸에 colspan 으로 되돌려준다.
@@ -217,6 +285,37 @@ function rehypeLinkManualToc() {
 // 블로그 글 이미지: 노션 임시 URL을 빌드 때 내려받아 정적 파일(public/notion-img)로
 // 저장하고 경로를 바꿔치기 → 정적 호스팅에서도 깨지지 않게.
 const IMG_DIR = "public/notion-img";
+
+// 원격 이미지를 내려받아 public/notion-img/<해시>.<확장자> 로 저장하고 로컬 경로를 돌려준다.
+// 실패하면 null (빌드는 계속). 본문 이미지와 멘션 파비콘이 같이 쓴다.
+async function saveRemoteImage(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "novice-22-blog/1.0 (+https://novice-22.com)" },
+    });
+    if (!res.ok) return null;
+    const buf = Buffer.from(await res.arrayBuffer());
+    const ct = res.headers.get("content-type") || "";
+    const ext = ct.includes("png")
+      ? "png"
+      : ct.includes("webp")
+        ? "webp"
+        : ct.includes("gif")
+          ? "gif"
+          : ct.includes("svg")
+            ? "svg"
+            : ct.includes("icon")
+              ? "ico"
+              : "jpg";
+    const hash = createHash("sha1").update(buf).digest("hex").slice(0, 16);
+    if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
+    writeFileSync(join(IMG_DIR, `${hash}.${ext}`), buf);
+    return `/notion-img/${hash}.${ext}`;
+  } catch {
+    return null;
+  }
+}
+
 function rehypeDownloadImages() {
   return async (tree: any) => {
     const imgs: any[] = [];
@@ -234,32 +333,12 @@ function rehypeDownloadImages() {
         const m = src.match(/[?&]href=([^&]+)/);
         if (m) realUrl = decodeURIComponent(m[1]);
         if (!/^https?:\/\//.test(realUrl)) return; // 이미 로컬이면 통과
-        try {
-          const res = await fetch(realUrl, {
-            headers: { "User-Agent": "novice-22-blog/1.0 (+https://novice-22.com)" },
-          });
-          if (!res.ok) return;
-          const buf = Buffer.from(await res.arrayBuffer());
-          const ct = res.headers.get("content-type") || "";
-          const ext = ct.includes("png")
-            ? "png"
-            : ct.includes("webp")
-              ? "webp"
-              : ct.includes("gif")
-                ? "gif"
-                : ct.includes("svg")
-                  ? "svg"
-                  : "jpg";
-          const hash = createHash("sha1").update(buf).digest("hex").slice(0, 16);
-          if (!existsSync(IMG_DIR)) mkdirSync(IMG_DIR, { recursive: true });
-          writeFileSync(join(IMG_DIR, `${hash}.${ext}`), buf);
-          node.properties.src = `/notion-img/${hash}.${ext}`;
-          delete node.properties.srcset;
-          delete node.properties.width;
-          delete node.properties.height;
-        } catch {
-          // 실패 시 원본 유지 (빌드는 계속)
-        }
+        const local = await saveRemoteImage(realUrl);
+        if (!local) return; // 실패 시 원본 유지 (빌드는 계속)
+        node.properties.src = local;
+        delete node.properties.srcset;
+        delete node.properties.width;
+        delete node.properties.height;
       })
     );
   };
@@ -275,7 +354,7 @@ const posts = defineCollection({
     database_id: import.meta.env.NOTION_DATABASE_ID,
     // 발행 체크된 글만
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -310,7 +389,7 @@ const cii = defineCollection({
     database_id: "3bff35df-dcf4-80d4-8f89-dbab7f0ceaba",
     // 내용을 다 쓴 항목만 공개 (빈 템플릿이 올라가지 않게)
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -358,7 +437,7 @@ const news = defineCollection({
     auth: import.meta.env.NOTION_TOKEN,
     database_id: "1f56ae44781344a7a1f317f86526bcc8",
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeStripImages, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+    rehypePlugins: [rehypeStripImages, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({

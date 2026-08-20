@@ -154,6 +154,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "";
         document.addEventListener("click", function (e) {
           var img = e.target.closest && e.target.closest(".prose img");
           if (!img) return;
+          if (img.closest(".link-mention")) return; // 멘션 칩의 파비콘은 링크로 이동
           closeLightbox();
           var ov = document.createElement("div");
           ov.className = "lightbox";
