@@ -386,20 +386,6 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .vg-tip b { color: var(--accent); }
 
 .sec-head { margin-top: 44px; }
-.more-sm { font-family: var(--mono); font-size: 12px; color: var(--text-dim); text-decoration: none; transition: color 0.16s; }
-.more-sm:hover { color: var(--accent); }
-
-.news-mini { list-style: none; }
-.news-mini li + li { border-top: 1px solid var(--border-soft); }
-.news-mini a {
-  display: flex; align-items: center; gap: 14px; padding: 12px 4px;
-  text-decoration: none; color: inherit; transition: background 0.14s ease;
-}
-.news-mini a:hover { background: var(--surface); }
-.news-mini a:hover .nm-title { color: var(--accent); }
-.nm-date { font-family: var(--mono); font-size: 11.5px; color: var(--text-faint); flex-shrink: 0; width: 78px; }
-.nm-title { font-size: 14px; color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nm-cat { font-size: 11px; color: var(--accent-dim); flex-shrink: 0; font-family: var(--mono); }
 
 .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
 .cat-tile {
@@ -778,13 +764,7 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .copy-btn:hover { color: var(--accent); border-color: var(--accent-dim); }
 .copy-btn.copied { color: var(--accent); }
 
-/* 보안뉴스 상세 — 기사 이미지(저작권·만료 URL)는 숨김.
-   단 멘션 칩의 파비콘은 본문 이미지가 아니라 링크 장식이므로 남긴다. */
-.news-prose img { display: none; }
-.news-prose a.link-mention img { display: inline-block; }
-.source-link { margin-top: 32px; }
-
-/* 해시태그 (글·뉴스 상단) */
+/* 해시태그 (글 상단) */
 .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .hashtag {
   display: inline-block;

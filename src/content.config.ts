@@ -416,48 +416,10 @@ const cii = defineCollection({
   })),
 });
 
-// 뉴스 본문에서 기사 이미지(저작권·만료 URL) 제거 — 렌더 자체를 안 하게
-function rehypeStripImages() {
-  return (tree: any) => {
-    const strip = (node: any) => {
-      if (!node.children) return;
-      node.children = node.children.filter(
-        (c: any) => !(c.type === "element" && c.tagName === "img")
-      );
-      node.children.forEach(strip);
-    };
-    strip(tree);
-  };
-}
+// 보안뉴스 스크랩은 사이트에서 내렸다 (노션에서만 본다).
+// 되살리려면 커밋 f24705c 시점의 news 컬렉션 + src/pages/news/ 를 참고.
 
-// ── 보안뉴스 스크랩 (Notion "보안뉴스 스크랩" DB) ────────────
-// 뉴스 제목 + 원문 링크 + 내 요약·느낀점. "발행" 체크된 것만.
-const news = defineCollection({
-  loader: notionLoader({
-    auth: import.meta.env.NOTION_TOKEN,
-    database_id: "1f56ae44781344a7a1f317f86526bcc8",
-    filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeStripImages, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
-  }),
-  schema: notionPageSchema({
-    properties: z.object({
-      "뉴스 제목": t.title,
-      "원문 URL": t.url.optional(),
-      카테고리: t.multi_select.optional(),
-      키워드: t.multi_select.optional(),
-      날짜: t.date.optional(),
-    }),
-  }).transform((page) => ({
-    title: page.properties["뉴스 제목"],
-    source: page.properties["원문 URL"] ?? "",
-    categories: page.properties.카테고리 ?? [],
-    keywords: page.properties.키워드 ?? [],
-    // 날짜 없으면 아주 옛날로 → 정렬 시 맨 아래로 (맨 위로 튀지 않게)
-    date: page.properties.날짜?.start ?? new Date(0),
-  })),
-});
-
-export const collections = { posts, cii, news };
+export const collections = { posts, cii };
 
 // ── 로컬 마크다운으로 되돌리려면 ─────────────────────────────
 // 아래 블록으로 교체하면 src/content/posts/*.md 를 다시 소스로 사용.

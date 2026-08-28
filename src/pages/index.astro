@@ -1,19 +1,14 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostCard from "../components/PostCard.astro";
-import { getCollection } from "astro:content";
 import { SITE, CATEGORIES, SOCIAL, VISITOR_API, AFFILIATIONS } from "../consts";
-import { formatDate, getAllPosts } from "../utils";
+import { getAllPosts } from "../utils";
 
 const posts = (await getAllPosts()).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
-const news = (await getCollection("news")).sort(
-  (a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
-);
 
 const recentPosts = posts.slice(0, 5);
-const recentNews = news.slice(0, 5);
 const pad = (n: number) => String(n).padStart(2, "0");
 
 // 카테고리별 글 수
@@ -25,12 +20,6 @@ const catCounts = CATEGORIES.map((c) => ({
 
 // 방문자 수 — 자리표시자(placeholder). 나중에 Cloudflare Workers 카운터로 교체.
 const visitors = { total: 0, today: 0, yesterday: 0 };
-
-// 뉴스 슬러그(날짜 기반)
-const newsSlug = (item: any) => {
-  const d = new Date(item.data.date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
 
 const links = SOCIAL.filter((s) => s.label !== "RSS");
 ---
@@ -107,32 +96,6 @@ const links = SOCIAL.filter((s) => s.label !== "RSS");
       </div>
     ) : (
       <div class="page-intro"><p>아직 글이 없어요. 첫 글을 기다리는 중.</p></div>
-    )
-  }
-
-  <!-- 최근 보안뉴스 -->
-  <div class="main-head sec-head">
-    <h1><span class="dot"></span> 최근 보안뉴스</h1>
-    <a href="/news" class="more-sm">더보기 →</a>
-  </div>
-  <div class="rule"></div>
-  {
-    recentNews.length > 0 ? (
-      <ul class="news-mini">
-        {recentNews.map((item) => (
-          <li>
-            <a href={`/news/${newsSlug(item)}`}>
-              <span class="nm-date">{formatDate(new Date(item.data.date))}</span>
-              <span class="nm-title">{item.data.title}</span>
-              {item.data.categories.length > 0 && (
-                <span class="nm-cat">{item.data.categories[0]}</span>
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <div class="page-intro"><p>발행된 보안뉴스가 없어요.</p></div>
     )
   }
 
