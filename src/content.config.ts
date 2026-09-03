@@ -416,9 +416,6 @@ const cii = defineCollection({
   })),
 });
 
-// 보안뉴스 스크랩은 사이트에서 내렸다 (노션에서만 본다).
-// 되살리려면 커밋 f24705c 시점의 news 컬렉션 + src/pages/news/ 를 참고.
-
 export const collections = { posts, cii };
 
 // ── 로컬 마크다운으로 되돌리려면 ─────────────────────────────

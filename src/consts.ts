@@ -144,8 +144,8 @@ export const ABOUT = {
         { when: "browse-mcp", name: "CVE-2026-55557", desc: "", href: "https://github.com/That1Drifter/browse-mcp/security/advisories/GHSA-m9mq-7m7q-xc6p" },
         { when: "pdf-reader-mcp", name: "CVE-2026-62264", desc: "", href: "https://github.com/SylphxAI/pdf-reader-mcp/security/advisories/GHSA-q344-5v34-gm84" },
         { when: "mssql-mcp-core", name: "CVE-2026-63129", desc: "", href: "https://github.com/ConnorBritain/mssql-mcp-core/security/advisories/GHSA-2m9m-6cr5-9x25" },
-        { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-76pm-mq2q-9gcr" },
-        { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
+        { when: "nginx-ui", name: "CVE-2026-84316", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
+        { when: "nginx-ui", name: "CVE-2026-84317", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-76pm-mq2q-9gcr" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-662p-52hx-cmh2" },
         { when: "fast-agent", name: "CVE 발급 대기", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
         // 2026-08-20 공개 (CERT/CC 조율). GHSA 가 비공개라 NVD 로 연결.
