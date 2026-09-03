@@ -82,8 +82,8 @@ function rehypeTrimTableCells() {
       const kids = cell.children ?? [];
       const first = kids.find((c: any) => c.type === "text");
       const last = [...kids].reverse().find((c: any) => c.type === "text");
-      if (first) first.value = first.value.replace(/^s+/, "");
-      if (last) last.value = last.value.replace(/s+$/, "");
+      if (first) first.value = first.value.replace(/^\s+/, "");
+      if (last) last.value = last.value.replace(/\s+$/, "");
     };
     const walk = (n: any) => {
       if (n?.tagName === "th" || n?.tagName === "td") {
