@@ -163,8 +163,8 @@ export const ABOUT = {
       label: "버그바운티",
       items: [
         { when: "FinderGap", name: "FVE-2026-615c-74655", desc: "유효 리포트 · 47 point" },
-        { when: "FinderGap", name: "FVE-2026-615c-74656", desc: "" },
-        { when: "FinderGap", name: "FVE-2026-615c-74668", desc: "" },
+        { when: "FinderGap", name: "FVE-2026-615c-74656", desc: "유효 리포트 · 40 point" },
+        { when: "FinderGap", name: "FVE-2026-615c-74668", desc: "유효 리포트 · 40 point" },
       ],
     },
     {
