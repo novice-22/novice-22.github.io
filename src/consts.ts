@@ -56,6 +56,7 @@ export const SOCIAL = [
   { label: "vuln", href: "https://vuln.novice-22.com" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
   { label: "VOCA", href: "https://voca.novice-22.com" },
+  { label: "File", href: "https://file.novice-22.com" },
   { label: "RSS", href: "/rss.xml" },
 ];
 
