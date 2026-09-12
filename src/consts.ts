@@ -129,6 +129,12 @@ export const ABOUT = {
       label: "수상 · 성과",
       items: [
         {
+          when: "2026.09",
+          name: "Microsoft MSRC Special Mentions · novice-22",
+          desc: "Researcher Recognition Program · FY2027",
+          href: "https://msrc.microsoft.com/special-mention",
+        },
+        {
           when: "2026.08",
           name: "Black Hat USA 2026 · MSRC 비공개 행사 초청",
           desc: "invite-only researcher celebration",
@@ -166,12 +172,13 @@ export const ABOUT = {
         { when: "FinderGap", name: "FVE-2026-615c-74655", desc: "유효 리포트 · 47 point" },
         { when: "FinderGap", name: "FVE-2026-615c-74656", desc: "유효 리포트 · 40 point" },
         { when: "FinderGap", name: "FVE-2026-615c-74668", desc: "유효 리포트 · 40 point" },
+        { when: "FinderGap", name: "FVE-2026-615c-74684", desc: "유효 리포트 · 47 point" },
       ],
     },
     {
       label: "자격증",
       items: [
-        { when: "2026", name: "정보보안기사", desc: "필기 합격 · 실기 2회차 준비 중" },
+        { when: "2026", name: "정보보안기사", desc: "필기 합격 · 실기 4회차 준비 중" },
         { when: "2023.05", name: "정보보안산업기사", desc: "" },
         { when: "2022.07", name: "리눅스마스터 2급", desc: "" },
         { when: "2022.04", name: "네트워크관리사 2급", desc: "" },
