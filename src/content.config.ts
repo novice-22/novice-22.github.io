@@ -416,7 +416,38 @@ const cii = defineCollection({
   })),
 });
 
-export const collections = { posts, cii };
+// ── Research (개인 연구·공부 기록) ───────────────────────────
+// 노션의 별도 DB("Research")를 읽어온다. 출력 모양은 posts 와 동일.
+//   하위 분야 없음 (field: null) — 필요해지면 "주제" select 를 추가하면 된다.
+const research = defineCollection({
+  loader: notionLoader({
+    auth: import.meta.env.NOTION_TOKEN,
+    database_id: "3daf35df-dcf4-8093-b57e-edec79d44632",
+    // 발행 체크된 글만
+    filter: { property: "발행", checkbox: { equals: true } },
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+  }),
+  schema: notionPageSchema({
+    properties: z.object({
+      제목: t.title,
+      슬러그: t.rich_text.optional(),
+      "한줄 요약": t.rich_text.optional(),
+      태그: t.multi_select.optional(),
+      발행일: t.date.optional(),
+    }),
+  }).transform((page) => ({
+    title: page.properties.제목,
+    slug: page.properties.슬러그?.trim() || undefined, // 비면 페이지 id로 폴백
+    category: "Research",
+    field: null,
+    tags: page.properties.태그 ?? [],
+    summary: page.properties["한줄 요약"] ?? "",
+    pubDate: page.properties.발행일?.start ?? new Date(),
+    draft: false, // 로더에서 이미 "발행" 필터링됨
+  })),
+});
+
+export const collections = { posts, cii, research };
 
 // ── 로컬 마크다운으로 되돌리려면 ─────────────────────────────
 // 아래 블록으로 교체하면 src/content/posts/*.md 를 다시 소스로 사용.

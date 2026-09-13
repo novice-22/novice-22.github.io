@@ -1,14 +1,15 @@
 import { getCollection } from "astro:content";
 
-// 글 전체 = 블로그 Pipeline(posts) + 주통기 점검 항목(cii).
-// 두 컬렉션의 출력 모양이 같아서 목록·카드·글 페이지에서 그대로 섞어 쓸 수 있다.
+// 글 전체 = 블로그 Pipeline(posts) + 주통기 점검 항목(cii) + 연구 기록(research).
+// 세 컬렉션의 출력 모양이 같아서 목록·카드·글 페이지에서 그대로 섞어 쓸 수 있다.
 // 새 소스가 늘면 여기 한 곳만 고치면 사이트 전체에 반영된다.
 export async function getAllPosts() {
-  const [posts, cii] = await Promise.all([
+  const [posts, cii, research] = await Promise.all([
     getCollection("posts", ({ data }) => !data.draft),
     getCollection("cii", ({ data }) => !data.draft),
+    getCollection("research", ({ data }) => !data.draft),
   ]);
-  return [...posts, ...cii];
+  return [...posts, ...cii, ...research];
 }
 
 // 날짜 → "2026.05.28"
