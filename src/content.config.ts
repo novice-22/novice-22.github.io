@@ -418,7 +418,7 @@ const cii = defineCollection({
 
 // ── Research (개인 연구·공부 기록) ───────────────────────────
 // 노션의 별도 DB("Research")를 읽어온다. 출력 모양은 posts 와 동일.
-//   하위 분야 없음 (field: null) — 필요해지면 "주제" select 를 추가하면 된다.
+//   하위 분야는 노션 "분야" select 로 지정 (MCP 등). consts.ts 의 children 과 이름을 맞춘다.
 const research = defineCollection({
   loader: notionLoader({
     auth: import.meta.env.NOTION_TOKEN,
@@ -431,6 +431,7 @@ const research = defineCollection({
     properties: z.object({
       제목: t.title,
       슬러그: t.rich_text.optional(),
+      분야: t.select.optional(), // MCP 등 — consts.ts CATEGORIES.research.children 과 이름 일치
       "한줄 요약": t.rich_text.optional(),
       태그: t.multi_select.optional(),
       발행일: t.date.optional(),
@@ -439,7 +440,7 @@ const research = defineCollection({
     title: page.properties.제목,
     slug: page.properties.슬러그?.trim() || undefined, // 비면 페이지 id로 폴백
     category: "Research",
-    field: null,
+    field: page.properties.분야 ?? null,
     tags: page.properties.태그 ?? [],
     summary: page.properties["한줄 요약"] ?? "",
     pubDate: page.properties.발행일?.start ?? new Date(),

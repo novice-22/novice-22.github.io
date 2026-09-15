@@ -45,7 +45,12 @@ export const CATEGORIES = [
   // 주통기 점검 항목 — 노션의 별도 DB("주통기 웹 애플리케이션 21항목")에서 직접 읽어온다.
   { slug: "cii", name: "주요통신기반시설" },
   // 개인 연구·공부 기록 — 노션의 별도 DB("Research")에서 직접 읽어온다.
-  { slug: "research", name: "Research" },
+  // 분야가 늘면 아래 children 에 { slug, name } 한 줄만 추가하면 된다.
+  {
+    slug: "research",
+    name: "Research",
+    children: [{ slug: "mcp", name: "MCP" }],
+  },
 ];
 
 // 방문자 카운터 Worker 주소 (Cloudflare Workers)
