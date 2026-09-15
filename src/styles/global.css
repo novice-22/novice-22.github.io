@@ -606,21 +606,27 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 /* prose */
 .prose { font-size: 15.5px; line-height: 1.8; color: var(--text); }
 .prose > * + * { margin-top: 20px; }
-.prose h2 {
-  font-size: 21px; font-weight: 600; letter-spacing: -0.2px;
-  margin-top: 44px; padding-top: 8px; scroll-margin-top: 90px;
-}
-/* 노션 제목1을 쓴 경우 브라우저 기본 크기(2em)로 튀지 않게 h2 와 같은 취급 */
+/* 본문 제목 — 노션 제목1~4가 그대로 h1~h4 로 온다.
+   단계가 한눈에 보이도록 크기를 확실히 벌리고(25/20/17/15), 위 여백은
+   글자 크기에 비례하게 준다. 브라우저 기본값(h1 2em 등)은 여기서 덮어씀. */
 .prose h1 {
-  font-size: 21px; font-weight: 600; letter-spacing: -0.2px;
-  margin-top: 44px; padding-top: 8px; scroll-margin-top: 90px;
+  font-size: 25px; font-weight: 700; letter-spacing: -0.4px;
+  margin-top: 46px; scroll-margin-top: 90px;
 }
-.prose h3 { font-size: 17px; font-weight: 600; margin-top: 32px; scroll-margin-top: 90px; }
-/* 제목4 — 브라우저 기본값(작고 굵음)으로 튀지 않게 h3 아래 단계로 */
+.prose h2 {
+  font-size: 20px; font-weight: 600; letter-spacing: -0.2px;
+  margin-top: 36px; scroll-margin-top: 90px;
+}
+.prose h3 { font-size: 17px; font-weight: 600; margin-top: 28px; scroll-margin-top: 90px; }
+/* 제목4 — 본문과 같은 크기에 굵기·색으로만 구분 */
 .prose h4 {
-  font-size: 15px; font-weight: 600; color: var(--text-dim);
-  margin-top: 26px; scroll-margin-top: 90px;
+  font-size: 15.5px; font-weight: 600; color: var(--text-dim);
+  margin-top: 22px; scroll-margin-top: 90px;
 }
+/* 제목 바로 아래에 또 제목이 오면(예: "1. …" 다음 줄이 "1-1 …") 사이가 뜨지 않게 */
+.prose :is(h1, h2, h3, h4) + :is(h2, h3, h4) { margin-top: 16px; }
+/* 제목 다음 첫 문단은 제목에 붙여서 묶여 보이게 */
+.prose :is(h1, h2, h3, h4) + p { margin-top: 12px; }
 .prose p { color: var(--text); }
 .prose a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-dim); }
 .prose a:hover { border-bottom-color: var(--accent); }
@@ -715,20 +721,25 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 .lb-close:hover { color: var(--accent); border-color: var(--accent-dim); }
 @media (prefers-reduced-motion: reduce) { .lightbox { animation: none; } }
 
-/* 표 (노션) — 본문 폭 안에서 줄바꿈되게 고정 레이아웃.
+/* 표 (노션) — 열 너비를 내용에 맞춰 자동 배분(auto).
+   fixed 로 균등 분배하면 짧은 열은 남고 긴 열만 계속 접혀 행이 쓸데없이 높아진다.
    display:block + overflow-x 를 쓰면 표가 내용만큼 늘어나 가로 스크롤이 생기므로 쓰지 않는다. */
 .prose table {
-  width: 100%; max-width: 100%; table-layout: fixed;
+  width: 100%; max-width: 100%; table-layout: auto;
   border-collapse: collapse; font-size: 14px; line-height: 1.65;
 }
 .prose th, .prose td {
   border: 1px solid var(--border);
   padding: 9px 13px; text-align: left; vertical-align: top;
-  overflow-wrap: break-word; /* 칸을 넘칠 때만 줄바꿈 (단어 중간을 함부로 안 쪼갬) */
+  /* 한국어는 어절(띄어쓰기) 단위로 끊어야 자연스럽다. 기본값은 글자 아무 데서나 끊음 */
+  word-break: keep-all;
+  overflow-wrap: anywhere; /* 그래도 칸을 넘치는 긴 토큰(URL 등)은 쪼개서 가로 스크롤 방지 */
 }
+/* 머리글·라벨 칸. 모노(JetBrains Mono)를 쓰면 한글은 Pretendard 로 넘어가는데
+   공백만 모노 폭(넓음)으로 그려져 어절 사이가 벌어진다 → 본문과 같은 sans 로 통일. */
 .prose th {
   background: var(--surface); color: var(--text);
-  font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+  font-size: 13px; font-weight: 600;
 }
 /* 첫 열은 대부분 라벨(점검 목적·판단 기준 …)이라 좁게 고정.
    table-layout:fixed 는 첫 행의 셀 너비만 보므로, th·td 가리지 않고 첫 칸에 적용해야 한다. */
@@ -737,7 +748,8 @@ html[data-sidebar="collapsed"] .main { margin: 0 auto; }
 /* 병합된 머리글 칸(노션 셀 병합 복원)은 가운데 정렬 */
 .prose th[colspan], .prose td[colspan] { text-align: center; width: auto; }
 .prose td { color: var(--text-dim); }
-.prose tbody tr:hover td { background: var(--surface-hover); }
+/* 마우스가 올라간 칸 하나만 밝아지게 (줄 전체가 아니라) */
+.prose tbody td:hover { background: var(--surface-hover); }
 .prose :not(pre) > code {
   font-family: var(--mono); font-size: 0.86em;
   background: var(--surface-hover); color: var(--accent);

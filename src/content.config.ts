@@ -7,6 +7,7 @@ import {
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import TABLE_WIDTHS from "./data/notion-table-widths.json" with { type: "json" };
 
 // 노션 코드블록 문법 강조 — 로더는 <pre><code class="language-x"> 만 내보내고
 // Astro 의 Shiki 파이프라인을 타지 않아 색이 안 입혀진다. 여기서 직접 Shiki(one-dark-pro)를
@@ -162,6 +163,64 @@ function rehypeMentionTitles() {
       node.children = kids;
       node.properties = { ...node.properties, className: ["link-mention"] };
     }
+  };
+}
+
+// 노션에서 직접 드래그해 조절한 표 열 너비를 되살린다.
+// 공개 API 는 열 "개수"(table_width)만 주고 너비는 안 준다. 그래서 너비는
+// src/data/notion-table-widths.json 에 미리 받아둔 값을 쓴다.
+//   구조: { "<대시 없는 페이지 id>": [ [144,312,272], null, ... ] }
+//         바깥 배열 = 글 안의 표 순서, 안쪽 배열 = 열별 너비(px), null = 지정 안 함
+//   노션에서 표 너비를 바꾸면 이 파일도 다시 받아야 반영된다.
+function rehypeTableWidths() {
+  return (tree: any, file: any) => {
+    // 원본 블록에서 이 글의 페이지 id 를 얻는다
+    let pageId: string | undefined;
+    const findPage = (n: any, depth = 0) => {
+      if (pageId || !n || typeof n !== "object" || depth > 4) return;
+      if (Array.isArray(n)) return n.forEach((c) => findPage(c, depth + 1));
+      if (n.parent?.type === "page_id" && n.parent.page_id) {
+        pageId = String(n.parent.page_id).replace(/-/g, "");
+        return;
+      }
+      for (const v of Object.values(n)) findPage(v, depth + 1);
+    };
+    findPage(file?.data);
+    const perTable = pageId ? (TABLE_WIDTHS as any)[pageId] : undefined;
+    if (!perTable) return;
+
+    const tables: any[] = [];
+    const walk = (n: any) => {
+      if (n?.tagName === "table") tables.push(n);
+      n?.children?.forEach(walk);
+    };
+    walk(tree);
+
+    tables.forEach((table, i) => {
+      const widths: (number | null)[] | null = perTable[i] ?? null;
+      if (!widths || !widths.some((w) => w)) return;
+      // 너비가 없는 열은 지정된 열들의 평균으로 채워 비율을 맞춘다
+      const known = widths.filter((w): w is number => typeof w === "number");
+      const avg = known.reduce((a, b) => a + b, 0) / known.length;
+      const filled = widths.map((w) => (typeof w === "number" ? w : avg));
+      const total = filled.reduce((a, b) => a + b, 0);
+      table.children = [
+        {
+          type: "element",
+          tagName: "colgroup",
+          properties: {},
+          children: filled.map((w) => ({
+            type: "element",
+            tagName: "col",
+            properties: { style: `width:${((w / total) * 100).toFixed(2)}%` },
+            children: [],
+          })),
+        },
+        ...(table.children ?? []),
+      ];
+      // colgroup 을 쓰려면 fixed 여야 브라우저가 지정 너비를 그대로 지킨다
+      table.properties = { ...table.properties, style: "table-layout:fixed" };
+    });
   };
 }
 
@@ -354,7 +413,7 @@ const posts = defineCollection({
     database_id: import.meta.env.NOTION_DATABASE_ID,
     // 발행 체크된 글만
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeTableWidths, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -389,7 +448,7 @@ const cii = defineCollection({
     database_id: "3bff35df-dcf4-80d4-8f89-dbab7f0ceaba",
     // 내용을 다 쓴 항목만 공개 (빈 템플릿이 올라가지 않게)
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeTableWidths, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
@@ -425,7 +484,7 @@ const research = defineCollection({
     database_id: "3daf35df-dcf4-8093-b57e-edec79d44632",
     // 발행 체크된 글만
     filter: { property: "발행", checkbox: { equals: true } },
-    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
+    rehypePlugins: [rehypeDownloadImages, rehypeLinkManualToc, rehypeShikiCode, rehypeMentionTitles, rehypeTableWidths, rehypeExternalLinks, rehypeTrimTableCells, rehypeMergeTableHeader],
   }),
   schema: notionPageSchema({
     properties: z.object({
