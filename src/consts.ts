@@ -136,7 +136,7 @@ export const ABOUT = {
       label: "수상 · 성과",
       items: [
         {
-          when: "2026.12",
+          when: "2026.09",
           name: "Black Hat Europe 2026 · MSRC 비공개 행사 초청",
           desc: "invite-only researcher celebration",
         },
