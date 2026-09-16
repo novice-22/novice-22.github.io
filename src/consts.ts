@@ -136,6 +136,11 @@ export const ABOUT = {
       label: "수상 · 성과",
       items: [
         {
+          when: "2026.12",
+          name: "Black Hat Europe 2026 · MSRC 비공개 행사 초청",
+          desc: "invite-only researcher celebration",
+        },
+        {
           when: "2026.09",
           name: "Microsoft MSRC Special Mentions · novice-22",
           desc: "Researcher Recognition Program · FY2027",
