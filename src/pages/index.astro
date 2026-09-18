@@ -21,7 +21,20 @@ const catCounts = CATEGORIES.map((c) => ({
 // 방문자 수 — 자리표시자(placeholder). 나중에 Cloudflare Workers 카운터로 교체.
 const visitors = { total: 0, today: 0, yesterday: 0 };
 
-const links = SOCIAL.filter((s) => s.label !== "RSS");
+// 홈 히어로 링크 — 칩이 너무 많아지지 않게 두 묶음으로 접어 드롭다운으로 낸다.
+// 사이드바 links 는 그대로 전체를 펼쳐 보여준다.
+//   묶음을 바꾸려면 아래 라벨 목록만 손대면 된다 (consts.ts 의 SOCIAL 라벨과 일치해야 함).
+const GROUPS = [
+  { name: "PROFILE", labels: ["GITHUB", "LINKEDIN", "DISCORD"] },
+  { name: "SITES", labels: ["vuln", "TAJA", "VOCA", "File"] },
+];
+const heroLinks = SOCIAL.filter((s) => s.label !== "RSS");
+const grouped = GROUPS.map((g) => ({
+  name: g.name,
+  items: heroLinks.filter((s) => g.labels.includes(s.label)),
+})).filter((g) => g.items.length > 0);
+const groupedLabels = GROUPS.flatMap((g) => g.labels);
+const links = heroLinks.filter((s) => !groupedLabels.includes(s.label));
 ---
 
 <BaseLayout>
@@ -44,7 +57,27 @@ const links = SOCIAL.filter((s) => s.label !== "RSS");
       ))
     }
     <div class="hero-links">
-      <a href="/about" class="hero-link">소개 <span class="arr">→</span></a>
+      <a href="/about" class="hero-link">about <span class="arr">→</span></a>
+      {/* 묶음 링크 — 마우스를 올리면 펼쳐지고, 클릭하면 고정된다(터치·키보드용) */}
+      {
+        grouped.map((g) => (
+          <div class="hero-drop">
+            <button type="button" class="hero-link hero-drop-btn" aria-expanded="false" aria-haspopup="true">
+              {g.name}
+              <svg class="caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+            <div class="hero-drop-menu" role="menu">
+              {g.items.map((s) => (
+                <a href={s.href} target="_blank" rel="noopener" role="menuitem">
+                  {s.label} <span class="arr">↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
       {
         links.map((s) => (
           <a href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener" class="hero-link">

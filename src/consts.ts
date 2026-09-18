@@ -60,6 +60,7 @@ export const VISITOR_API = "https://visitor-counter.gmemod6602.workers.dev";
 export const SOCIAL = [
   { label: "GITHUB", href: "https://github.com/novice-22" },
   { label: "LINKEDIN", href: "https://www.linkedin.com/in/novice22" },
+  { label: "DISCORD", href: "https://discord.com/users/443427199585091614" },
   { label: "CTF팀", href: "https://ctftime.org/team/443097" },
   { label: "vuln", href: "https://vuln.novice-22.com" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
@@ -79,9 +80,10 @@ export const ABOUT = {
   //    사이드바 문구와 겹치지 않게, 좀 더 "사람"이 보이는 문장으로.
   //    예: "취약점을 찾고 분석하는 과정을 좋아합니다."
   lines: [
-    "모의해킹 분야 취업을 준비하는 취준생입니다.",
-    "RubiyaLab 소속으로 CTF에 참여하고, 오픈소스 취약점 제보와 버그바운티를 하고 있습니다.",
-    "개발도 좋아해서 취미로 개발과 보안 도구를 만들고 있고, LLM·MCP에 관심이 많아 개인 연구를 하고 있습니다.",
+    "현재는 모의해킹 업무를 하고 있습니다.",
+    "주 활동으로는 RubiyaLab의 소그룹인 RubiyaLab Holiday에서 매주 CTF에 참여하고 있고, 그룹 리더를 맡고 있습니다.",
+    "부 활동으로는 취약점 분석을 하고 있습니다. 오픈소스 프로젝트를 분석해 취약점을 찾고, 버그바운티도 꾸준히 하고 있습니다.",
+    "최근에는 LLM을 많이 사용하다 보니 LLM 관련해서 공부 중이며, MCP 관련해서는 개인적으로 공부와 연구를 하고 있습니다.",
   ],
 
   // ② 관심 분야 태그 — 증명용 스킬이 아니라 "요즘 파는 것" 태그.
