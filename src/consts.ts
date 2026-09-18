@@ -59,6 +59,7 @@ export const VISITOR_API = "https://visitor-counter.gmemod6602.workers.dev";
 // 외부 링크
 export const SOCIAL = [
   { label: "GITHUB", href: "https://github.com/novice-22" },
+  { label: "LINKEDIN", href: "https://www.linkedin.com/in/novice22" },
   { label: "CTF팀", href: "https://ctftime.org/team/443097" },
   { label: "vuln", href: "https://vuln.novice-22.com" },
   { label: "TAJA", href: "https://taja.novice-22.com" },
