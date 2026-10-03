@@ -169,7 +169,7 @@ export const ABOUT = {
         { when: "nginx-ui", name: "CVE-2026-84316", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-cf23-7qxj-xmhr" },
         { when: "nginx-ui", name: "CVE-2026-84317", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-76pm-mq2q-9gcr" },
         { when: "nginx-ui", name: "CVE 발급 대기", desc: "", href: "https://github.com/0xJacky/nginx-ui/security/advisories/GHSA-662p-52hx-cmh2" },
-        { when: "fast-agent", name: "CVE 발급 대기", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
+        { when: "fast-agent", name: "CVE-2026-102610", desc: "", href: "https://github.com/evalstate/fast-agent/security/advisories/GHSA-9vhv-g5hf-m7m7" },
         // 2026-08-20 공개 (CERT/CC 조율). GHSA 가 비공개라 NVD 로 연결.
         { when: "neo", name: "CVE-2026-18482", desc: "", href: "https://nvd.nist.gov/vuln/detail/CVE-2026-18482" },
         { when: "kubeshark", name: "CVE 발급 대기", desc: "", href: "https://github.com/kubeshark/kubeshark/security/advisories/GHSA-8vf2-hxg5-crqh" },
