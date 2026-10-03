@@ -66,6 +66,7 @@ export const SOCIAL = [
   { label: "TAJA", href: "https://taja.novice-22.com" },
   { label: "VOCA", href: "https://voca.novice-22.com" },
   { label: "File", href: "https://file.novice-22.com" },
+  { label: "webhook", href: "http://novice-22server.tailb09b57.ts.net:3100" },
   { label: "RSS", href: "/rss.xml" },
 ];
 

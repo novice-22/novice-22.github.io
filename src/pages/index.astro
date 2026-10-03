@@ -26,7 +26,7 @@ const visitors = { total: 0, today: 0, yesterday: 0 };
 //   묶음을 바꾸려면 아래 라벨 목록만 손대면 된다 (consts.ts 의 SOCIAL 라벨과 일치해야 함).
 const GROUPS = [
   { name: "PROFILE", labels: ["GITHUB", "LINKEDIN", "DISCORD"] },
-  { name: "SITES", labels: ["vuln", "TAJA", "VOCA", "File"] },
+  { name: "SITES", labels: ["vuln", "TAJA", "VOCA", "File", "webhook"] },
 ];
 const heroLinks = SOCIAL.filter((s) => s.label !== "RSS");
 const grouped = GROUPS.map((g) => ({
