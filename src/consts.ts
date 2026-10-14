@@ -158,6 +158,15 @@ export const ABOUT = {
         { when: "2026.05", name: "IoT 취약점 분석 프로젝트", desc: "최우수 프로젝트" },
       ],
     },
+    // Microsoft 취약점 제보 — MSRC 접수 건. 링크는 MSRC 업데이트 가이드 권고문.
+    //   패턴: { when: "제품명", name: "CVE 번호", desc: "한 줄 비고" }
+    {
+      label: "취약점 제보 · Microsoft (CVE)",
+      items: [
+        { when: "Windows (QUIC)", name: "CVE-2026-103577", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-103577" },
+        { when: ".NET", name: "CVE-2026-96959", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96959" },
+      ],
+    },
     // 오픈소스 취약점 제보 — GitHub 프로젝트 대상. 새 제보는 아래 줄에 계속 추가.
     //   패턴: { when: "대상 프로젝트", name: "CVE 번호(또는 발급 대기)", desc: "CWE 등 비고" }
     {
