@@ -49,7 +49,10 @@ export const CATEGORIES = [
   {
     slug: "research",
     name: "Research",
-    children: [{ slug: "mcp", name: "MCP" }],
+    children: [
+      { slug: "mcp", name: "MCP" },
+      { slug: "llm", name: "LLM" },
+    ],
   },
 ];
 
