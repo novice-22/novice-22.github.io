@@ -196,9 +196,26 @@ function rehypeTableWidths() {
     };
     walk(tree);
 
+    // 표의 실제 열 수 (첫 행의 셀 개수)
+    const colCount = (table: any): number => {
+      let row: any = null;
+      const findRow = (n: any) => {
+        if (row || !n) return;
+        if (n.tagName === "tr") { row = n; return; }
+        n.children?.forEach(findRow);
+      };
+      findRow(table);
+      return (row?.children ?? []).filter(
+        (c: any) => c.tagName === "th" || c.tagName === "td"
+      ).length;
+    };
+
     tables.forEach((table, i) => {
       const widths: (number | null)[] | null = perTable[i] ?? null;
       if (!widths || !widths.some((w) => w)) return;
+      // 글에 표가 추가·삭제되면 저장된 순서와 어긋난다. 열 수가 다르면 건너뛴다
+      // (엉뚱한 표에 남의 너비를 씌우는 것보다 자동 배분이 낫다)
+      if (colCount(table) !== widths.length) return;
       // 너비가 없는 열은 지정된 열들의 평균으로 채워 비율을 맞춘다
       const known = widths.filter((w): w is number => typeof w === "number");
       const avg = known.reduce((a, b) => a + b, 0) / known.length;
