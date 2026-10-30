@@ -56,13 +56,14 @@ export const CATEGORIES = [
     ],
   },
   // 설치·사용법 실습 기록 — 노션의 별도 DB("Lab")에서 직접 읽어온다.
-  // 분야(AI · Tools · Infra)는 그 분야 첫 글이 나올 때 children 에 한 줄씩 추가한다.
+  // 분야(AI · Tools · Infra · Cloud)는 그 분야 첫 글이 나올 때 children 에 한 줄씩 추가한다.
   {
     slug: "lab",
     name: "Lab",
     children: [
       { slug: "ai", name: "AI" },
       { slug: "infra", name: "Infra" },
+      { slug: "cloud", name: "Cloud" },
     ],
   },
 ];
