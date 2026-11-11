@@ -178,6 +178,8 @@ export const ABOUT = {
     {
       label: "취약점 제보 · Microsoft (CVE)",
       items: [
+        { when: "Visual Studio Code", name: "CVE-2026-121661", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-121661" },
+        { when: "ASP.NET Core", name: "CVE-2026-118741", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-118741" },
         { when: "Windows (QUIC)", name: "CVE-2026-103577", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-103577" },
         { when: ".NET", name: "CVE-2026-96959", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96959" },
       ],
