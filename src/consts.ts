@@ -184,6 +184,15 @@ export const ABOUT = {
         { when: ".NET", name: "CVE-2026-96959", desc: "", href: "https://msrc.microsoft.com/update-guide/vulnerability/CVE-2026-96959" },
       ],
     },
+    // AWS 취약점 제보 — AWS Security(CVD) 접수 건. 링크는 AWS 보안 공지(Security Bulletin).
+    //   패턴: { when: "제품명", name: "CVE 번호", desc: "한 줄 비고" }
+    {
+      label: "취약점 제보 · AWS (CVE)",
+      items: [
+        { when: "mcp-gateway-registry", name: "CVE-2026-100307", desc: "", href: "https://aws.amazon.com/security/security-bulletins/rss/2026-179-aws/" },
+        { when: "mcp-gateway-registry", name: "CVE-2026-125926", desc: "", href: "https://aws.amazon.com/security/security-bulletins/rss/2026-180-aws/" },
+      ],
+    },
     // 오픈소스 취약점 제보 — GitHub 프로젝트 대상. 새 제보는 아래 줄에 계속 추가.
     //   패턴: { when: "대상 프로젝트", name: "CVE 번호(또는 발급 대기)", desc: "CWE 등 비고" }
     {
