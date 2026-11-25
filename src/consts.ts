@@ -248,7 +248,7 @@ export const ABOUT = {
     {
       label: "자격증",
       items: [
-        { when: "2026", name: "정보보안기사", desc: "필기 합격 · 실기 4회차 준비 중" },
+        { when: "2026", name: "정보보안기사", desc: "필기 합격" },
         { when: "2023.05", name: "정보보안산업기사", desc: "" },
         { when: "2022.07", name: "리눅스마스터 2급", desc: "" },
         { when: "2022.04", name: "네트워크관리사 2급", desc: "" },
