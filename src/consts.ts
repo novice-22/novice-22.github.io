@@ -15,6 +15,9 @@ export const SITE = {
 // 한 줄 안 항목은 [라벨 : 이름] 형태로 " | " 로 이어짐. role 은 선택(이름 뒤 괄호).
 export const AFFILIATIONS = [
   [
+    { label: "Company", name: "엔키화이트햇 컨설팅센터 2팀", role: "연구원" },
+  ],
+  [
     { label: "CTF Team", name: "RubiyaLab" },
     { label: "CTF 소그룹", name: "RubiyaLab Holiday", role: "Group Lead" },
   ],
@@ -96,10 +99,8 @@ export const ABOUT = {
   //    사이드바 문구와 겹치지 않게, 좀 더 "사람"이 보이는 문장으로.
   //    예: "취약점을 찾고 분석하는 과정을 좋아합니다."
   lines: [
-    "현재는 엔키화이트햇에서 모의해킹 및 침투 테스트 업무를 하고 있습니다.",
-    "주 활동으로는 RubiyaLab의 소그룹인 RubiyaLab Holiday에서 매주 CTF에 참여하고 있고, 그룹 리더를 맡고 있습니다.",
-    "부 활동으로는 취약점 분석을 하고 있습니다. 오픈소스 프로젝트를 분석해 취약점을 찾고, 버그바운티도 꾸준히 하고 있습니다.",
-    "최근에는 LLM을 많이 사용하다 보니 LLM 관련해서 공부 중이며, MCP 관련해서는 개인적으로 공부와 연구를 하고 있습니다.",
+    "현재는 엔키화이트햇 컨설팅센터 2팀 연구원으로 모의해킹 및 침투 테스트 업무를 하고 있습니다.",
+    "RubiyaLab에 속해 있으며, 소그룹인 RubiyaLab Holiday에서 CTF에 참여하고 있고 그룹 리더를 맡고 있습니다. 오픈소스 프로젝트에서 제로데이 취약점을 찾고 있으며, 버그바운티도 같이 진행하고 있습니다. 제일 관심 있는 분야는 LLM 활용입니다.",
   ],
 
   // ② 관심 분야 태그 — 증명용 스킬이 아니라 "요즘 파는 것" 태그.
@@ -116,6 +117,17 @@ export const ABOUT = {
       items: [
         { when: "2026.08 ~ 현재", name: "RubiyaLab Holiday", desc: "소그룹 · Group Lead", href: "https://ctftime.org/team/443097" },
         { when: "2025.12 ~ 현재", name: "RubiyaLab", desc: "", href: "https://rubiyalab.team/" },
+      ],
+    },
+    // CTF 대회 기록 — CTFtime 기준 상위권만. 최신 대회가 위. 링크는 CTFtime 대회 페이지.
+    //   패턴: { when: "#순위", name: "대회명", desc: "", href: "CTFtime 대회 주소" }
+    {
+      label: "CTF 대회 기록 · 2026",
+      items: [
+        { when: "#17", name: "GlacierCTF 2026", desc: "", href: "https://ctftime.org/event/3337/" },
+        { when: "#24", name: "FortID CTF 2026", desc: "", href: "https://ctftime.org/event/3440/" },
+        { when: "#9", name: "WATCHLIST", desc: "", href: "https://ctftime.org/event/3326/" },
+        { when: "#18", name: "BrunnerCTF 2026", desc: "", href: "https://ctftime.org/event/3065/" },
       ],
     },
     {
@@ -219,13 +231,19 @@ export const ABOUT = {
     //   · 새 플랫폼(HackerOne 등)이 생기면 when 에 플랫폼명을 넣어 이어서 추가.
     //   패턴: { when: "플랫폼", name: "리포트번호", desc: "상태 · 포인트" }
     {
-      label: "버그바운티",
+      label: "버그바운티 · FinderGap",
       items: [
-        { when: "FinderGap", name: "FVE-2026-615c-74655", desc: "유효 리포트 · 47 point" },
-        { when: "FinderGap", name: "FVE-2026-615c-74656", desc: "유효 리포트 · 40 point" },
-        { when: "FinderGap", name: "FVE-2026-615c-74668", desc: "유효 리포트 · 40 point" },
-        { when: "FinderGap", name: "FVE-2026-615c-74684", desc: "유효 리포트 · 47 point" },
+        { when: "FinderGap", name: "FVE-2026-615c-74655", desc: "유효 리포트 · 47 point", href: "https://hacker.findthegap.co.kr/certification/JPlOMpTwPxp6hSxQkqvGx" },
+        { when: "FinderGap", name: "FVE-2026-615c-74656", desc: "유효 리포트 · 40 point", href: "https://hacker.findthegap.co.kr/certification/JPlOMpTwPxp6hSxQkqvGx" },
+        { when: "FinderGap", name: "FVE-2026-615c-74668", desc: "유효 리포트 · 40 point", href: "https://hacker.findthegap.co.kr/certification/JPlOMpTwPxp6hSxQkqvGx" },
+        { when: "FinderGap", name: "FVE-2026-615c-74684", desc: "유효 리포트 · 47 point", href: "https://hacker.findthegap.co.kr/certification/JPlOMpTwPxp6hSxQkqvGx" },
       ],
+    },
+    // MSRC 버그바운티 — 결과가 확정된 건만 한 줄씩 추가. 비어 있으면 페이지에 안 보임.
+    //   패턴: { when: "제품명", name: "Bounty Awarded", desc: "" }
+    {
+      label: "버그바운티 · MSRC",
+      items: [],
     },
     {
       label: "자격증",
